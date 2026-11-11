@@ -31,7 +31,7 @@ jobs:
           components: clippy
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 26
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -52,6 +52,10 @@ jobs:
         run: |
           cd nuclear && tools/release/build-runtimes.sh && ./install.sh --no-vscode --no-zed --no-agent
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: "The backend whose contract the app reads"
+        working-directory: nuclear
+        run: |
+          nuclear build dragonfly-backend/examples/examples-backend/tasks_api
       - name: "An app built and tested"
         working-directory: nuclear/dragonfly-mobile/examples/examples-flutter-dialect/tasks_app
         run: |
