@@ -24,9 +24,14 @@ jobs:
       - name: The other repositories of the working tree
         run: |
           git clone --depth 1 https://github.com/nuclearlang/dragonfly nuclear/dragonfly
+          git clone --depth 1 https://github.com/nuclearlang/dragonfly-backend nuclear/dragonfly-backend
+          git clone --depth 1 https://github.com/nuclearlang/dragonfly-web nuclear/dragonfly-web
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -45,7 +50,7 @@ jobs:
           cd packages/dragonfly && flutter pub get && flutter test && flutter analyze
       - name: Install nuclear and dragonfly
         run: |
-          cd nuclear && ./install.sh --no-vscode --no-zed --no-agent
+          cd nuclear && tools/release/build-runtimes.sh && ./install.sh --no-vscode --no-zed --no-agent
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: "An app built and tested"
         working-directory: nuclear/dragonfly-mobile/examples/examples-flutter-dialect/tasks_app
