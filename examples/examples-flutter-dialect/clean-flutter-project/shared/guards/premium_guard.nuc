@@ -1,0 +1,6 @@
+// Guard: a custom access check, like NestJS CanActivate.
+guard PremiumGuard
+  (session: SessionManager)
+
+  canActivate() boolean
+    session.value<boolean>("premium") != false

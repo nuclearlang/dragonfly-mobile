@@ -1,0 +1,8 @@
+// Global component: runs with every ForceLogout, wherever the user is. session.destroy publishes
+// SessionEnded, and the visible screen reacts (the others, when shown again).
+component ForceLogoutComponent
+  (session: SessionManager)
+
+  @on(ForceLogout)
+  exec(event: ForceLogout) void
+    ~session.destroy()

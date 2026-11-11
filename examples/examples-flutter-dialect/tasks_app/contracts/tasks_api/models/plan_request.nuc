@@ -1,0 +1,5 @@
+// Generated from the contract tasks_api 0.1.0 (nuclear contracts). Do not edit: `nuclear contracts update` rewrites it.
+// A goal for the planner.
+PlanRequest
+  @minLength(1)
+  goal: string

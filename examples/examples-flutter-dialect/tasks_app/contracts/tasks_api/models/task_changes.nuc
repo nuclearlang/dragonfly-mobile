@@ -1,0 +1,9 @@
+// Generated from the contract tasks_api 0.1.0 (nuclear contracts). Do not edit: `nuclear contracts update` rewrites it.
+// The changes of a task: only the fields that come are changed.
+TaskChanges
+  @minLength(1)
+  title?: string
+  done?: boolean
+  @max(3)
+  @min(1)
+  priority?: int

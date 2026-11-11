@@ -1,0 +1,8 @@
+usecase SaveCharacterUseCase
+  (repository: CharacterRepository)
+
+  @requires(session = true)
+  exec(character: CharacterParams) Result<CharacterError, Character>
+    saved = ~repository.save(character)
+    repository.purgeGetPage()
+    Ok(saved)

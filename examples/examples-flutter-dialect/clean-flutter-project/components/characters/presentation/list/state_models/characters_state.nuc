@@ -1,0 +1,3 @@
+// State model: each field is a state of the screen.
+CharactersState
+  (full: Character[], error: CharacterError, loading: boolean)

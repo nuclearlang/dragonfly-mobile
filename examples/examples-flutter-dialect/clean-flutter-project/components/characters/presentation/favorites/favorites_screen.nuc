@@ -1,0 +1,25 @@
+// Tab 1 of MainShell. Without a session the router goes to LoginScreen; with a session, the role "fan"
+// (or one that inherits it, like "admin") and PremiumGuard's approval are required; otherwise, DeniedScreen.
+@screen(
+  route = "/favorites",
+  loggedIn = { forward: LoginScreen },
+  acl = { roles: ["fan"], guards: [PremiumGuard], forward: DeniedScreen },
+  shell = { widget: MainShell, tab: 1 },
+)
+stateless FavoritesScreen
+  build(context: BuildContext) Widget
+    Scaffold(
+      appBar = AppBar(
+        title = Text("characters.favorites.title".tr()),
+        actions = [IconButton(icon = Icon(Icons.logout), onPressed = () => confirmLogout(context))],
+      ),
+      body = Center(child = Text("characters.favorites.body".tr())),
+    )
+
+  // a warning dialog with the Close / Accept footer (onAccept)
+  confirmLogout(context: BuildContext) void
+    DragonflyDialog.warning(
+      header = Text("session.logout.title".tr()),
+      onAccept = () => inject<SessionComponent>().logout(),
+      child = Text("session.logout.message".tr()),
+    ).show(context)

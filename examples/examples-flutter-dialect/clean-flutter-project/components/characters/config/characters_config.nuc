@@ -1,0 +1,7 @@
+// Configuration of the characters component: a connection only for its images, and the color of its logs
+// (without logColor, one is chosen by the component's name).
+config CharactersConfig
+  logColor: LogColor = LogColor.mint
+  connections: Connection[] = [
+    Http(connectionName = "images", baseUrl = "https://rickandmortyapi.com/api/character/avatar/"),
+  ]

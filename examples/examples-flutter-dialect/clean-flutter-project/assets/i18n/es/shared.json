@@ -1,0 +1,9 @@
+{
+  "app": {
+    "title": "Rick Demo"
+  },
+  "tabs": {
+    "characters": "Personajes",
+    "favorites": "Favoritos"
+  }
+}

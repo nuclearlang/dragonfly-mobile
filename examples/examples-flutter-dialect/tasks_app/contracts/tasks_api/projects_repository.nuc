@@ -1,0 +1,12 @@
+// Generated from the contract tasks_api 0.1.0 (nuclear contracts). Do not edit: `nuclear contracts update` rewrites it.
+// Projects: POST /projects, GET /projects/:id (with its tasks and their tags), POST /projects/:id/close/:into.
+@repository(path = "projects", connection = "tasks_api")
+repository ProjectsRepository
+  @post
+  create(input: NewProject) Result<TasksApiError, Project>
+
+  @get(path = ":id", local = true)
+  one(id: int) Result<TasksApiError, Project>
+
+  @post(path = ":id/close/:into")
+  close(id: int, into: int) Result<TasksApiError, Moved>

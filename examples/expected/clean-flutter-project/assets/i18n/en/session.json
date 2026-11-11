@@ -1,0 +1,15 @@
+{
+  "login": {
+    "title": "Login",
+    "user": "User",
+    "pass": "Password",
+    "submit": "Sign in",
+    "hi": "Hi {name}",
+    "shortPass": "The password is too short",
+    "unknownUser": "Not a character of the show"
+  },
+  "logout": {
+    "title": "Sign out",
+    "message": "Do you want to end the session?"
+  }
+}

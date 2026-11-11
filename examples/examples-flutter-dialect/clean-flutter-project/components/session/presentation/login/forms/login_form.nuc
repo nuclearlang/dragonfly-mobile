@@ -1,0 +1,10 @@
+// Form model: the login fields and their rules. Each form field (FormTextField("user"))
+// is bound by its name; the messages are dictionary keys or the text itself.
+LoginForm
+  @required
+  @minLength(3)
+  user: string
+
+  @required
+  @minLength(5, message = "session.login.shortPass")
+  pass: string

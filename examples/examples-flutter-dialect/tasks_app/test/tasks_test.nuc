@@ -1,0 +1,13 @@
+// The generated client against canned answers of the API: the repository is the real generated code.
+TasksTest
+  @test("pending tasks come from GET /tasks?done=false")
+  pending()
+    DragonflyTest.respondWith([{ "id": 1, "title": "Write the contract", "done": false, "priority": 1 }])
+    result = ~TasksComponent.pending()
+    expect(result, isOkWith([Task(id = 1, title = "Write the contract", done = false, priority = 1)]))
+    expect(DragonflyTest.requests.first.uri.toString(), "http://localhost:3000/tasks?done=false")
+
+  @test("a failed call is the contract's error")
+  failure()
+    DragonflyTest.respondWith({ "message": "not found" }, status = 404)
+    expect(~TasksComponent.add("x"), isErr)

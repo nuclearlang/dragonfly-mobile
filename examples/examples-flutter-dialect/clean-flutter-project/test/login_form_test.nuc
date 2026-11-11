@@ -1,0 +1,20 @@
+// The login form: the LoginForm rules and the remote validation of the user (the characters
+// repository is a mock). The messages come from assets/i18n/en.
+@mock([CharacterRepository])
+LoginFormTest
+  setUp()
+    found: Page<Character> = Page(info = PageInfo(count = 1, pages = 1), results = [])
+    when(() => CharacterRepository.search("rick")).thenReturnAsync(Ok(found))
+    when(() => CharacterRepository.search("nobody")).thenReturnAsync(Err(CharacterError(message = "404")))
+
+  @test("the rules of LoginForm first, then the API for the user")
+  rules()
+    form = inject<LoginFormManager>()
+    form.change("user", "nobody")
+    form.change("pass", "123")
+    expect(~form.submit((f) => null), isFalse)
+    expect(form.state.errorOf("pass"), "The password is too short")
+    expect(form.state.errorOf("user"), "Not a character of the show")
+    form.change("user", "rick")
+    form.change("pass", "c-137")
+    expect(~form.submit((f) => null), isTrue)

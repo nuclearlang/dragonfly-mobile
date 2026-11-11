@@ -1,0 +1,11 @@
+// A page of an API list: always info + results; only the model of each result changes
+// (Page<Character>, Page<Episode>...). It lives in shared/: every component uses it.
+PageInfo
+  count: int
+  pages: int
+  next?: string
+  prev?: string
+
+Page<T>
+  info: PageInfo
+  results: T[]

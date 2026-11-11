@@ -1,0 +1,8 @@
+// What the assistant knows about the app, searched by meaning.
+knowledge Faq
+  documents() string[]
+    [
+      "Notes are kept only while the app is open.",
+      "The assistant runs on a local Ollama model.",
+      "Summaries have a title and at most three points.",
+    ]

@@ -1,0 +1,14 @@
+// Generated from the contract tasks_api 0.1.0 (nuclear contracts). Do not edit: `nuclear contracts update` rewrites it.
+// A task (table tasks), maybe in a project and with tags.
+Task
+  @primary
+  id: int
+  title: string
+  done: boolean = false
+  // 1 high, 2 normal, 3 low
+  priority: int = 2
+  createdAt?: DateTime
+  // its project, loaded with relations("project"); projectId is its column
+  project?: Project
+  projectId?: int
+  tags?: Tag[]

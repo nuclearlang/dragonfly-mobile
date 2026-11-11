@@ -1,0 +1,10 @@
+{
+  "list": {
+    "title": "Personajes",
+    "loading": "Cargando la página {page}"
+  },
+  "favorites": {
+    "title": "Favoritos",
+    "body": "Tus personajes favoritos"
+  }
+}

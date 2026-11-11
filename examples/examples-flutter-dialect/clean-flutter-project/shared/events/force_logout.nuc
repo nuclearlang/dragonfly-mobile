@@ -1,0 +1,4 @@
+// The backend asks to close the session: any response with the header x-app-event: force_logout publishes it
+// (EventInterceptor in project_config).
+event ForceLogout
+  reason?: string

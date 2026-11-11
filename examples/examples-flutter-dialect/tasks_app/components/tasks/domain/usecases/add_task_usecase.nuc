@@ -1,0 +1,6 @@
+// NewTask carries the backend's rules (@minLength(1), @maxLength(200)): a form on it refuses what the API refuses.
+usecase AddTaskUseCase
+  (tasks: TasksRepository)
+
+  exec(title: string) Result<TasksApiError, Task>
+    ~tasks.create(input = NewTask(title = title))

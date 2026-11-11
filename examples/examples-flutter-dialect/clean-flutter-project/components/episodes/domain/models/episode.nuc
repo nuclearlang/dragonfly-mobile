@@ -1,0 +1,10 @@
+Episode
+  id: int
+  name: string
+  episode: string
+  @key("air_date")
+  airDate: string
+  @DateConverter
+  created: DateTime
+  @UriConverter
+  url: Uri

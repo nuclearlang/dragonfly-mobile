@@ -1,0 +1,14 @@
+// Screens with shell = { widget: MainShell, tab: n } are its tabs; each one keeps its own stack.
+stateless MainShell(navigator: StatefulNavigationShell)
+  build(context: BuildContext) Widget
+    Scaffold(
+      body = navigator,
+      bottomNavigationBar = NavigationBar(
+        selectedIndex = navigator.currentIndex,
+        onDestinationSelected = (index) => navigator.goBranch(index),
+        destinations = [
+          NavigationDestination(icon = Icon(Icons.people), label = "shared.tabs.characters".tr()),
+          NavigationDestination(icon = Icon(Icons.star), label = "shared.tabs.favorites".tr()),
+        ],
+      ),
+    )

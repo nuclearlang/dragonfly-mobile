@@ -1,0 +1,4 @@
+// Generated from the contract tasks_api 0.1.0 (nuclear contracts). Do not edit: `nuclear contracts update` rewrites it.
+// How many tasks a close moved.
+Moved
+  count: int

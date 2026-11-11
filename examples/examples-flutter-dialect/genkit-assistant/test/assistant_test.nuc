@@ -1,0 +1,17 @@
+tests AssistantTests
+  setUp() void
+    startFakeGenkit(["I saved it.", "Hello!"])
+
+  @test("the chat answers and the tools keep notes")
+  chatAndTools() void
+    notes = NoteTools()
+    expect(notes.addNote("buy milk"), "saved note 1: buy milk")
+    expect(notes.listNotes(), "1. buy milk")
+    expect(notes.tools().length, 2)
+    chat = Assistant(notes)
+    expect(~chat.send("save buy milk"), "I saved it.")
+
+  @test("the knowledge finds the closest text")
+  knowledge() void
+    hits = ~Faq().search("the assistant runs on a local Ollama model", k = 1)
+    expect(hits.first.text, "The assistant runs on a local Ollama model.")

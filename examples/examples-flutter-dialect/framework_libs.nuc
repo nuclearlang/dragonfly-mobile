@@ -1,0 +1,23 @@
+// Framework libraries (bloc, dio, get_it): their names are imported on their own thanks to the type
+// definitions (defs/dart/). emit and state come from BlocBase, the base of Cubit.
+
+CounterCubit: Cubit<int>
+  ()
+    super(0)
+
+  increment() void
+    emit(state + 1)
+
+Api
+  dio: Dio = Dio()
+
+  load(url: string) string
+    response = ~dio.get<string>(url)
+    response.data ?? ''
+
+setup() void
+  GetIt.instance.registerSingleton<Api>(Api())
+
+stateless CounterView
+  build(context: BuildContext) Widget
+    BlocBuilder<CounterCubit, int>(builder = (context, count) => Text('${count}'))

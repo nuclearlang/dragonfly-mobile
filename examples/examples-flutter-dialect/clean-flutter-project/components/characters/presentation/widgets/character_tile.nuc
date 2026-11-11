@@ -1,0 +1,9 @@
+stateless CharacterTile(character: Character)
+  build(context: BuildContext) Widget
+    ListTile(
+      leading = CircleAvatar(backgroundImage = NetworkImage(character.image)),
+      title = Text(character.name),
+      subtitle = Text(character.species),
+      trailing = Icon(Icons.arrow_forward_ios, size = 16),
+      onTap = () => context.pushTo(CharacterDetailScreen(id = character.id)),
+    )

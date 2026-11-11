@@ -1,0 +1,435 @@
+{
+  "app": "tasks_api",
+  "controllers": {
+    "AssistantController": {
+      "component": "assistant",
+      "description": "The assistant over HTTP: POST /assistant/chat and POST /assistant/plan.",
+      "path": "assistant",
+      "routes": [
+        {
+          "name": "chat",
+          "params": [
+            {
+              "in": "body",
+              "name": "input",
+              "type": "ChatRequest"
+            }
+          ],
+          "path": "chat",
+          "returns": "ChatReply",
+          "status": 200,
+          "verb": "post"
+        },
+        {
+          "name": "plan",
+          "params": [
+            {
+              "in": "body",
+              "name": "input",
+              "type": "PlanRequest"
+            }
+          ],
+          "path": "plan",
+          "returns": "PlanReply",
+          "status": 200,
+          "verb": "post"
+        }
+      ]
+    },
+    "ProjectsController": {
+      "component": "tasks",
+      "description": "Projects: POST /projects, GET /projects/:id (with its tasks and their tags), POST /projects/:id/close/:into.",
+      "path": "projects",
+      "routes": [
+        {
+          "error": "Error",
+          "name": "create",
+          "params": [
+            {
+              "in": "body",
+              "name": "input",
+              "type": "NewProject"
+            }
+          ],
+          "path": "",
+          "returns": "Project",
+          "verb": "post"
+        },
+        {
+          "error": "Error",
+          "name": "one",
+          "params": [
+            {
+              "in": "path",
+              "name": "id",
+              "type": "int"
+            }
+          ],
+          "path": "{id}",
+          "returns": "Project",
+          "verb": "get"
+        },
+        {
+          "error": "Error",
+          "name": "close",
+          "params": [
+            {
+              "in": "path",
+              "name": "id",
+              "type": "int"
+            },
+            {
+              "in": "path",
+              "name": "into",
+              "type": "int"
+            }
+          ],
+          "path": "{id}/close/{into}",
+          "returns": "Moved",
+          "status": 200,
+          "verb": "post"
+        }
+      ]
+    },
+    "TasksController": {
+      "component": "tasks",
+      "description": "The CRUD of tasks: GET /tasks?done=false, GET /tasks/page?page=1&size=20, GET /tasks/:id, POST /tasks, PATCH /tasks/:id, DELETE /tasks/:id.",
+      "path": "tasks",
+      "routes": [
+        {
+          "error": "Error",
+          "name": "all",
+          "params": [
+            {
+              "in": "query",
+              "name": "done",
+              "optional": true,
+              "type": "boolean"
+            }
+          ],
+          "path": "",
+          "returns": "Task[]",
+          "verb": "get"
+        },
+        {
+          "error": "Error",
+          "name": "paged",
+          "params": [
+            {
+              "default": 1,
+              "in": "query",
+              "name": "page",
+              "type": "int"
+            },
+            {
+              "default": 20,
+              "in": "query",
+              "name": "size",
+              "type": "int"
+            }
+          ],
+          "path": "page",
+          "returns": "Page<Task>",
+          "verb": "get"
+        },
+        {
+          "error": "Error",
+          "name": "one",
+          "params": [
+            {
+              "in": "path",
+              "name": "id",
+              "type": "int"
+            }
+          ],
+          "path": "{id}",
+          "returns": "Task",
+          "verb": "get"
+        },
+        {
+          "error": "Error",
+          "name": "create",
+          "params": [
+            {
+              "in": "body",
+              "name": "input",
+              "type": "NewTask"
+            }
+          ],
+          "path": "",
+          "returns": "Task",
+          "verb": "post"
+        },
+        {
+          "error": "Error",
+          "name": "change",
+          "params": [
+            {
+              "in": "path",
+              "name": "id",
+              "type": "int"
+            },
+            {
+              "in": "body",
+              "name": "changes",
+              "type": "TaskChanges"
+            }
+          ],
+          "path": "{id}",
+          "returns": "Task",
+          "verb": "patch"
+        },
+        {
+          "error": "Error",
+          "name": "remove",
+          "params": [
+            {
+              "in": "path",
+              "name": "id",
+              "type": "int"
+            }
+          ],
+          "path": "{id}",
+          "returns": "Removed",
+          "verb": "delete"
+        }
+      ]
+    }
+  },
+  "dialect": "nestjs",
+  "models": {
+    "ChatReply": {
+      "fields": [
+        {
+          "name": "answer",
+          "type": "string"
+        }
+      ],
+      "key": null
+    },
+    "ChatRequest": {
+      "description": "A message for the assistant; `thread` keeps one conversation.",
+      "fields": [
+        {
+          "name": "message",
+          "rules": {
+            "minLength": 1
+          },
+          "type": "string"
+        },
+        {
+          "default": "default",
+          "name": "thread",
+          "type": "string"
+        }
+      ],
+      "key": null
+    },
+    "Moved": {
+      "description": "How many tasks a close moved.",
+      "fields": [
+        {
+          "name": "count",
+          "type": "int"
+        }
+      ],
+      "key": null
+    },
+    "NewProject": {
+      "description": "What the API receives to create a project.",
+      "fields": [
+        {
+          "name": "name",
+          "rules": {
+            "maxLength": 100,
+            "minLength": 1
+          },
+          "type": "string"
+        }
+      ],
+      "key": null
+    },
+    "NewTask": {
+      "description": "What the API receives to create a task.",
+      "fields": [
+        {
+          "name": "title",
+          "rules": {
+            "maxLength": 200,
+            "minLength": 1
+          },
+          "type": "string"
+        },
+        {
+          "default": 2,
+          "name": "priority",
+          "rules": {
+            "max": 3,
+            "min": 1
+          },
+          "type": "int"
+        },
+        {
+          "name": "projectId",
+          "optional": true,
+          "type": "int"
+        }
+      ],
+      "key": null
+    },
+    "PlanReply": {
+      "fields": [
+        {
+          "name": "titles",
+          "type": "string[]"
+        },
+        {
+          "name": "created",
+          "type": "int"
+        }
+      ],
+      "key": null
+    },
+    "PlanRequest": {
+      "description": "A goal for the planner.",
+      "fields": [
+        {
+          "name": "goal",
+          "rules": {
+            "minLength": 1
+          },
+          "type": "string"
+        }
+      ],
+      "key": null
+    },
+    "Project": {
+      "description": "A project groups tasks (table projects); removing it removes its tasks.",
+      "fields": [
+        {
+          "key": "primary",
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "tasks",
+          "optional": true,
+          "type": "Task[]"
+        }
+      ],
+      "key": "id"
+    },
+    "Removed": {
+      "description": "The answer of a delete.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        }
+      ],
+      "key": null
+    },
+    "Tag": {
+      "description": "A label of tasks (table tags); a task has many tags and a tag many tasks (table tasks_tags).",
+      "fields": [
+        {
+          "key": "primary",
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "label",
+          "type": "string"
+        },
+        {
+          "name": "tasks",
+          "optional": true,
+          "type": "Task[]"
+        }
+      ],
+      "key": "id"
+    },
+    "Task": {
+      "description": "A task (table tasks), maybe in a project and with tags.",
+      "fields": [
+        {
+          "key": "primary",
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "default": false,
+          "name": "done",
+          "type": "boolean"
+        },
+        {
+          "default": 2,
+          "description": "1 high, 2 normal, 3 low",
+          "name": "priority",
+          "type": "int"
+        },
+        {
+          "name": "createdAt",
+          "optional": true,
+          "type": "DateTime"
+        },
+        {
+          "description": "its project, loaded with relations(\"project\"); projectId is its column",
+          "name": "project",
+          "optional": true,
+          "type": "Project"
+        },
+        {
+          "name": "projectId",
+          "optional": true,
+          "type": "int"
+        },
+        {
+          "name": "tags",
+          "optional": true,
+          "type": "Tag[]"
+        }
+      ],
+      "key": "id"
+    },
+    "TaskChanges": {
+      "description": "The changes of a task: only the fields that come are changed.",
+      "fields": [
+        {
+          "name": "title",
+          "optional": true,
+          "rules": {
+            "minLength": 1
+          },
+          "type": "string"
+        },
+        {
+          "name": "done",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "priority",
+          "optional": true,
+          "rules": {
+            "max": 3,
+            "min": 1
+          },
+          "type": "int"
+        }
+      ],
+      "key": null
+    }
+  },
+  "platform": "backend",
+  "repositories": {},
+  "version": "0.1.0"
+}

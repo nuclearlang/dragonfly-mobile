@@ -1,0 +1,8 @@
+// Flows of a Genkit server (deployed elsewhere), called like an API.
+@remote("http://localhost:3400")
+remote StoryFlows
+  @flow("tellJoke")
+  tellJoke(topic: string) string
+
+  @stream("streamStory")
+  story(topic: string) string

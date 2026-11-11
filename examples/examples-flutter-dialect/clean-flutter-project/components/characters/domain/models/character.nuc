@@ -1,0 +1,25 @@
+Origin
+  name: string
+  url: string
+
+Location
+  name: string
+  url: string
+
+// the local table is named characters (without @entity: character, the model's name in snake_case)
+@entity("characters")
+Character
+  // @primary gives Character a local table: CharacterRepository(saveLocal) keeps what it fetches
+  @primary
+  id: int
+  name: string
+  status: string
+  species: string
+  type: string
+  gender: string
+  origin: Origin
+  location: Location
+  image: string
+  episode: string[]
+  url: string
+  created: string

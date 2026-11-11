@@ -1,0 +1,8 @@
+usecase GetPageUseCase
+  (repository: CharacterRepository, names: CharacterNames)
+
+  @requires(internet = true)
+  exec(page: int) Result<CharacterError, Character[]>
+    data = ~repository.getPage(page)
+    Log.d("page loaded", data = { "page": page, "count": data.results.length })
+    Ok(names.alive(data.results))

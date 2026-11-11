@@ -1,0 +1,6 @@
+// The tasks not done yet: the generated TasksRepository.all is GET /tasks?done=false of the backend.
+usecase PendingTasksUseCase
+  (tasks: TasksRepository)
+
+  exec() Result<TasksApiError, Task[]>
+    ~tasks.all(done = false)

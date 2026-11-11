@@ -1,0 +1,5 @@
+// The page for an address no screen has.
+@screen(notFound = true)
+stateless NotFoundScreen
+  build(context: BuildContext) Widget
+    Scaffold(body = Center(child = Text("Page not found")))

@@ -1,0 +1,22 @@
+// Session tests: the repository is a mock; the session, the ACL and the events are the real ones.
+rick() Auth
+  Auth(userId = "1", name = "Rick", token = "t", roles = ["admin"])
+
+@mock([AuthRepository])
+SessionTest
+  setUp()
+    registerFallbackValue(LoginParams(user = "", pass = ""))
+    when(() => AuthRepository.login(any())).thenReturnAsync(Ok(rick()))
+
+  @test("login starts a session; admin inherits the role fan")
+  login()
+    expect(~SessionComponent.login("rick", "c-137"), isOkWith(rick()))
+    expect(inject<SessionManager>().get<Auth>().name, "Rick")
+    expect(Acl.can(roles = ["fan"]), isTrue)
+
+  @test("the backend forces a logout through a global component")
+  forceLogout()
+    ~SessionComponent.login("rick", "c-137")
+    Events.publish(ForceLogout(reason = "password changed"))
+    ~pumpEventQueue()
+    expect(inject<SessionManager>().active, isFalse)

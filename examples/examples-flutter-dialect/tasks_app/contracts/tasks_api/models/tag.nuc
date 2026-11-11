@@ -1,0 +1,7 @@
+// Generated from the contract tasks_api 0.1.0 (nuclear contracts). Do not edit: `nuclear contracts update` rewrites it.
+// A label of tasks (table tags); a task has many tags and a tag many tasks (table tasks_tags).
+Tag
+  @primary
+  id: int
+  label: string
+  tasks?: Task[]

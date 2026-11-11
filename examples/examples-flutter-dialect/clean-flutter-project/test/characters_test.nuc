@@ -1,0 +1,47 @@
+// Tests of the characters component: the repository is a mock (mocktail); everything else is the real code.
+character(name: string, status: string) Character
+  Character(
+    id = 1,
+    name = name,
+    status = status,
+    species = "Human",
+    type = "",
+    gender = "Male",
+    origin = Origin(name = "Earth", url = ""),
+    location = Location(name = "Earth", url = ""),
+    image = "",
+    episode = [],
+    url = "",
+    created = "",
+  )
+
+page() Page<Character>
+  Page(
+    info = PageInfo(count = 2, pages = 1),
+    results = [character("Rick", "Alive"), character("Birdperson", "Dead")],
+  )
+
+@mock([CharacterRepository])
+CharactersTest
+  setUp()
+    when(() => CharacterRepository.getPage(1)).thenReturnAsync(Ok(page()))
+
+  @test("GetPageUseCase keeps only the alive characters")
+  aliveOnly()
+    result = ~GetPageUseCase.exec(1)
+    expect(result, isOkWith([character("Rick", "Alive")]))
+
+  @test("a failed request is an error of the component")
+  failure()
+    when(() => CharacterRepository.getPage(2)).thenReturnAsync(Err(CharacterError(message = "down")))
+    expect(~CharactersComponent.getPage(2), isErrWith(CharacterError(message = "down")))
+
+  @states("the manager loads the alive characters", expect = [CharactersState.full([character("Rick", "Alive")])])
+  loadsPage(manager: CharactersManager)
+    manager.loadPage(1)
+
+  @widget("the list shows the alive characters")
+  showsList(tester: WidgetTester)
+    ~tester.pumpScreen(CharacterListScreen())
+    expect(find.text("Rick"), findsOneWidget)
+    expect(find.text("Birdperson"), findsNothing)

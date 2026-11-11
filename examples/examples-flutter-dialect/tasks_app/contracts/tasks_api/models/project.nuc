@@ -1,0 +1,7 @@
+// Generated from the contract tasks_api 0.1.0 (nuclear contracts). Do not edit: `nuclear contracts update` rewrites it.
+// A project groups tasks (table projects); removing it removes its tasks.
+Project
+  @primary
+  id: int
+  name: string
+  tasks?: Task[]

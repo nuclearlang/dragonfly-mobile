@@ -1,0 +1,21 @@
+// Generated from the contract tasks_api 0.1.0 (nuclear contracts). Do not edit: `nuclear contracts update` rewrites it.
+// The CRUD of tasks: GET /tasks?done=false, GET /tasks/page?page=1&size=20, GET /tasks/:id, POST /tasks, PATCH /tasks/:id, DELETE /tasks/:id.
+@repository(path = "tasks", connection = "tasks_api")
+repository TasksRepository
+  @get(local = true)
+  all(done?: boolean) Result<TasksApiError, Task[]>
+
+  @get(path = "page")
+  paged(page: int = 1, size: int = 20) Result<TasksApiError, Page<Task>>
+
+  @get(path = ":id", local = true)
+  one(id: int) Result<TasksApiError, Task>
+
+  @post
+  create(input: NewTask) Result<TasksApiError, Task>
+
+  @patch(path = ":id")
+  change(id: int, changes: TaskChanges) Result<TasksApiError, Task>
+
+  @delete(path = ":id")
+  remove(id: int) Result<TasksApiError, Removed>

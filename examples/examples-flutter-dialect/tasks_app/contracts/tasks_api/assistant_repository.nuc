@@ -1,0 +1,9 @@
+// Generated from the contract tasks_api 0.1.0 (nuclear contracts). Do not edit: `nuclear contracts update` rewrites it.
+// The assistant over HTTP: POST /assistant/chat and POST /assistant/plan.
+@repository(path = "assistant", connection = "tasks_api")
+repository AssistantRepository
+  @post(path = "chat")
+  chat(input: ChatRequest) Result<TasksApiError, ChatReply>
+
+  @post(path = "plan")
+  plan(input: PlanRequest) Result<TasksApiError, PlanReply>

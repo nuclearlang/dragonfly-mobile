@@ -1,0 +1,12 @@
+@stateModel(CharactersState)
+statemanager CharactersManager
+  (characters: CharactersComponent)
+    loadPage(1)
+
+  @state(CharactersState.loading)
+  loading()
+
+  @before(loading)
+  @state(CharactersState.full)
+  loadPage(page: int) Result<CharacterError, Character[]>
+    ~characters.getPage(page)

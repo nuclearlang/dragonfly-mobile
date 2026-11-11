@@ -1,0 +1,11 @@
+@screen(route = "/", providers = [TasksManager])
+stateless TasksScreen
+  build(context: BuildContext) Widget
+    Scaffold(
+      appBar = AppBar(title = Text("Tasks")),
+      body = TasksStateBuilder<TasksManager>(
+        loading = () => Center(child = CircularProgressIndicator()),
+        loaded = (tasks) => ListView(children = tasks.map((t) => ListTile(title = Text(t.title), subtitle = Text("priority ${t.priority}")))),
+        error = (e) => Center(child = Text(e.message)),
+      ),
+    )

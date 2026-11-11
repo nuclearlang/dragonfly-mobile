@@ -1,0 +1,10 @@
+// Generated from the contract tasks_api 0.1.0 (nuclear contracts). Do not edit: `nuclear contracts update` rewrites it.
+// What the API receives to create a task.
+NewTask
+  @maxLength(200)
+  @minLength(1)
+  title: string
+  @max(3)
+  @min(1)
+  priority: int = 2
+  projectId?: int

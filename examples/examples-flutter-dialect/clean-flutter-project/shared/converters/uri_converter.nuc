@@ -1,0 +1,8 @@
+// Addresses come as text; sample() is the value the generated tests use, since they cannot invent a Uri.
+converter UriConverter
+  fromJson(json: string) Uri
+    Uri.parse(json)
+  toJson(value: Uri) string
+    value.toString()
+  sample() Uri
+    Uri.parse("https://rickandmortyapi.com/api/episode/1")

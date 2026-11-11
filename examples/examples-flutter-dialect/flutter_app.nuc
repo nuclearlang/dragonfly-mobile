@@ -1,0 +1,40 @@
+// flutter dialect: `stateless` and `stateful` are kinds of dialects/mobile/flutter/dialect.toml.
+// The widgets (MaterialApp, Scaffold...) are imported on their own from package:flutter/material.dart.
+
+main() void
+  runApp(MyApp())
+
+stateless MyApp
+  build(context: BuildContext) Widget
+    MaterialApp(
+      title = 'Flutter Demo',
+      home = Scaffold(
+        appBar = AppBar(title = Text('Flutter Demo')),
+        body = Center(child = TapboxA()),
+      ),
+    )
+
+stateful TapboxA
+  _active: bool = false
+
+  _handleTap() void
+    setState()
+      _active = not _active
+
+  build(context: BuildContext) Widget
+    GestureDetector(
+      onTap = _handleTap,
+      child = Container(
+        width = 200,
+        height = 200,
+        decoration = BoxDecoration(
+          color = _active ? Colors.lightGreen[700] : Colors.grey[600],
+        ),
+        child = Center(
+          child = Text(
+            _active ? 'Active' : 'Inactive',
+            style = TextStyle(fontSize = 32, color = Colors.white),
+          ),
+        ),
+      ),
+    )

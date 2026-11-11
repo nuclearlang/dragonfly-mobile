@@ -1,0 +1,7 @@
+// Widget shared by every component.
+stateless OfflineBanner
+  build(context: BuildContext) Widget
+    Material(
+      color = Colors.red,
+      child = Padding(padding = EdgeInsets.all(12), child = Text("No internet")),
+    )

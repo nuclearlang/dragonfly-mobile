@@ -1,0 +1,38 @@
+// DragonflyForm binds its fields to LoginForm by name and validates with LoginFormManager; with a
+// valid form, onSubmit passes the form model to LoginManager (the business logic).
+@screen(route = "/login", providers = [LoginManager, LoginFormManager])
+stateless LoginScreen
+  build(context: BuildContext) Widget
+    Scaffold(
+      appBar = AppBar(title = Text("session.login.title".tr())),
+      body = LoginStateBuilder<LoginManager>(
+        initial = () => Padding(
+          padding = EdgeInsets.all(24),
+          child = DragonflyForm(
+            manager = LoginFormManager,
+            onSubmit = (form) => LoginManager.login(form),
+            child = Column(
+              children = [
+                FormTextField("user", label = "session.login.user".tr(), autofillHints = [AutofillHints.username]),
+                FormTextField(
+                  "pass",
+                  label = "session.login.pass".tr(),
+                  obscureText = true,
+                  textInputAction = TextInputAction.done,
+                ),
+                SizedBox(height = 24),
+                FormSubmit(child = Text("session.login.submit".tr())),
+              ],
+            ),
+          ),
+        ),
+        loading = () => Center(child = CircularProgressIndicator()),
+        done = (auth) => Center(
+          child = FilledButton(
+            onPressed = () => context.goTo(FavoritesScreen()),
+            child = Text("session.login.hi".tr({ "name": auth.name })),
+          ),
+        ),
+        error = (e) => Center(child = Text(e.message)),
+      ),
+    )

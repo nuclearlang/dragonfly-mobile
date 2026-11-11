@@ -1,0 +1,3 @@
+// Global event: any component publishes it with Events.publish(ForceUpdateRequired(...)).
+event ForceUpdateRequired
+  minVersion: string

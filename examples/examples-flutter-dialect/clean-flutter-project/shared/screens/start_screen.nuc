@@ -1,0 +1,13 @@
+// The splash: the logo for at least 2 s while the data loads; then, the list. @splash gives the
+// native screen (Android, iOS, web) the same background and logo, and makes /start the initial route.
+@screen(route = "/start")
+@splash(color = "#ffffff", image = "assets/splash/logo.png")
+stateless StartScreen
+  build(context: BuildContext) Widget
+    SplashScreen(
+      next = CharacterListScreen(),
+      minDuration = Duration(seconds = 2),
+      onLoad = () => ~Future.delayed(Duration(seconds = 1)),
+      onError = (context, error, retry) => Center(child = TextButton(onPressed = retry, child = Text("Retry"))),
+      child = Scaffold(backgroundColor = Colors.white, body = Center(child = Image.asset("assets/splash/logo.png", width = 128))),
+    )

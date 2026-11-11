@@ -1,0 +1,6 @@
+// Generated from the contract tasks_api 0.1.0 (nuclear contracts). Do not edit: `nuclear contracts update` rewrites it.
+// A message for the assistant; `thread` keeps one conversation.
+ChatRequest
+  @minLength(1)
+  message: string
+  thread: string = "default"

@@ -1,0 +1,25 @@
+// Repository: each method is an http call. The path is appended to the connection's baseUrl;
+// `:id` takes the value of the `id` parameter, and the other parameters go to the query (GET) or the body.
+// saveLocal: a GET that answers a Character (or a list) saves it in the local table and gets getOneAsLocal(id) /
+// getManyAsLocal(ids), which answer the same from the device, without a request.
+@repository(path = "character", saveLocal = true)
+repository CharacterRepository
+  @get(path = ":id")
+  getOne(id: int) Result<CharacterError, Character>
+
+  @get(cache = true, ttl = Duration(minutes = 10))
+  getPage(page: int) Result<CharacterError, Page<Character>>
+
+  // the API answers 404 when no character has that name
+  @get
+  search(name: string) Result<CharacterError, Page<Character>>
+
+  @get(path = ":ids")
+  getMany(@path ids: string) Character[]
+
+  @post(retry = 1)
+  save(character: CharacterParams) Result<CharacterError, Character>
+
+  // the characters fetched so far, newest first: a query on the local table, no request
+  recent(count: int) Character[]
+    ~local<Character>().orderBy("created", desc = true).limit(count).getMany()

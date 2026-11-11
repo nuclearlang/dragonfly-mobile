@@ -1,0 +1,11 @@
+@stateModel(LoginState)
+statemanager LoginManager
+  (session: SessionComponent)
+
+  @state(LoginState.loading)
+  loading()
+
+  @before(loading)
+  @state(LoginState.done)
+  login(form: LoginForm) Result<AuthError, Auth>
+    ~session.login(form.user, form.pass)

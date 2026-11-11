@@ -1,0 +1,5 @@
+// A mobile app over the tasks_api backend (examples/examples-backend/tasks_api): its models and the client of its
+// routes come from the backend's contract (ADR-0098), generated into contracts/tasks_api/ by the build.
+dragonfly(platform = "mobile", dialect = "flutter")
+app(name = "tasks_app", description = "Dragonfly example: a client generated from a backend's contract.", version = "1.0.0+1")
+contracts(tasks_api = "../../../../dragonfly-backend/examples/examples-backend/tasks_api")

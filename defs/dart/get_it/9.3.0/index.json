@@ -1,0 +1,33 @@
+{
+"format": 1,
+"libraries": ["package:get_it/get_it.dart"],
+"reexports": {},
+"symbols": {
+  "Disposable": 0,
+  "DisposingFunc": 0,
+  "FactoryFunc": 0,
+  "FactoryFuncAsync": 0,
+  "FactoryFuncParam": 0,
+  "FactoryFuncParamAsync": 0,
+  "GetIt": 0,
+  "InitDependency": 0,
+  "ObjectRegistration": 0,
+  "ObjectRegistrationType": 0,
+  "ScopeDisposeFunc": 0,
+  "ShadowChangeHandlers": 0,
+  "WaitingTimeOutException": 0,
+  "WillSignalReady": 0,
+  "throwIf": 0,
+  "throwIfNot": 0
+},
+"classes": {
+  "Disposable": {"supers":["Object"],"members":["onDispose"],"params":[]},
+  "GetIt": {"supers":["Object"],"members":["allReady","allReadySync","allowReassignment","allowRegisterMultipleImplementationsOfoneType","call","changeTypeInstanceName","checkLazySingletonInstanceExists","currentScopeName","debugEventsEnabled","dropScope","enableRegisteringMultipleInstancesOfOneType","findAll","findFirstObjectRegistration","get","getAll","getAllAsync","getAsync","hasScope","isReady","isReadySync","isRegistered","maybeGet","onScopeChanged","popScope","popScopesTill","pushNewScope","pushNewScopeAsync","registerCachedFactory","registerCachedFactoryAsync","registerCachedFactoryParam","registerCachedFactoryParamAsync","registerFactory","registerFactoryAsync","registerFactoryParam","registerFactoryParamAsync","registerLazySingleton","registerLazySingletonAsync","registerSingleton","registerSingletonAsync","registerSingletonIfAbsent","registerSingletonWithDependencies","releaseInstance","reset","resetLazySingleton","resetLazySingletons","resetScope","signalReady","skipDoubleRegistration","skipUnregisterIfNotRegistered","unregister"]},
+  "InitDependency": {"supers":["Object","Type"],"members":["instanceName","toString","type"],"params":["type","instanceName"]},
+  "ObjectRegistration": {"supers":["Object"],"members":["acceptsParams","canBeWaitedFor","debugName","instance","instanceName","isAsync","isNamedRegistration","isReady","registeredWithType","registrationType"],"params":[]},
+  "ObjectRegistrationType": {"supers":["Enum"],"members":[]},
+  "ShadowChangeHandlers": {"supers":["Object"],"members":["onGetShadowed","onLeaveShadow"],"params":[]},
+  "WaitingTimeOutException": {"supers":["Object","Exception"],"members":["areReady","areWaitedBy","notReadyYet","toString"],"params":["areWaitedBy","notReadyYet","areReady"]},
+  "WillSignalReady": {"supers":["Object"],"members":[],"params":[]}
+}
+}

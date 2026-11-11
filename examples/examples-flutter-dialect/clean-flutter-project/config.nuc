@@ -1,0 +1,14 @@
+// The platform this project is written for and the dialect it is built with (ADR-0093).
+dragonfly(platform = "mobile", dialect = "flutter")
+
+// The project's pubspec: dragonfly writes build/app/pubspec.yaml from it.
+// Dragonfly adds by itself (not written here): dragonfly, flutter_bloc, fpdart, go_router,
+// json_annotation; for code generation and tests: build_runner, json_serializable, mocktail, bloc_test,
+// integration_test (and flutter_native_splash with @splash). Full list: build/app/pubspec.yaml.
+// `dragonfly flutter add <package>` adds a package here and generates its type definitions.
+app(
+  name = "clean_flutter_project",
+  description = "Dragonfly example: characters, episodes, session, forms and translations.",
+  version = "1.0.0+1",
+  usesMaterialDesign = true,
+)

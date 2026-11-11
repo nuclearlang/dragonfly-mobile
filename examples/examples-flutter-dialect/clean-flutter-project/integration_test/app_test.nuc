@@ -1,0 +1,13 @@
+// Integration test: the real app on a device or emulator (dragonfly test --integration).
+AppTest
+  @widget("the app starts on the splash, then the list of characters; favorites asks for a session")
+  starts(tester: WidgetTester)
+    ~startDragonfly()
+    ~tester.pumpWidget(App())
+    ~tester.pumpAndSettle()
+    expect(find.byType(StartScreen), findsOneWidget)
+    ~tester.pump(Duration(seconds = 3))
+    ~tester.pumpAndSettle()
+    expect(find.text("Characters"), findsWidgets)
+    ~tester.tapText("Favorites")
+    expect(find.text("Sign in"), findsOneWidget)

@@ -1,0 +1,30 @@
+{
+"format": 1,
+"libraries": ["package:schemantic/schemantic.dart"],
+"reexports": {},
+"symbols": {
+  "AnyOf": 0,
+  "DoubleField": 0,
+  "Field": 0,
+  "IntegerField": 0,
+  "JsonSchemaMetadata": 0,
+  "Schema": 0,
+  "SchemaFlatten": 0,
+  "SchemanticType": 0,
+  "StringField": 0,
+  "ValidationError": 0,
+  "ValidationErrorType": 0
+},
+"classes": {
+  "AnyOf": {"supers":["Object"],"members":["anyOf"],"params":["anyOf"]},
+  "DoubleField": {"supers":["Field"],"members":["exclusiveMaximum","exclusiveMinimum","maximum","minimum","multipleOf"],"params":["name","description","minimum","maximum","exclusiveMinimum","exclusiveMaximum","multipleOf","defaultValue"]},
+  "Field": {"supers":["Object"],"members":["defaultValue","description","name"],"params":["name","description","defaultValue"]},
+  "IntegerField": {"supers":["Field"],"members":["exclusiveMaximum","exclusiveMinimum","maximum","minimum","multipleOf"],"params":["name","description","minimum","maximum","exclusiveMinimum","exclusiveMaximum","multipleOf","defaultValue"]},
+  "JsonSchemaMetadata": {"supers":["Object"],"members":["definition","dependencies","name"],"params":["name","definition","dependencies"]},
+  "Schema": {"supers":["Object"],"members":["additionalProperties","description"],"params":["description","additionalProperties"]},
+  "SchemanticType": {"supers":["Object"],"members":["jsonSchema","parse","schemaMetadata","serialize","validate"],"params":[]},
+  "StringField": {"supers":["Field"],"members":["enumValues","format","maxLength","minLength","pattern"],"params":["name","description","minLength","maxLength","pattern","format","enumValues","defaultValue"]},
+  "ValidationError": {"supers":[],"members":["details","error","path","toErrorString"]},
+  "ValidationErrorType": {"supers":["Enum"],"members":[]}
+}
+}

@@ -1,0 +1,496 @@
+# flutter dialect: Dart + Flutter.
+# - kinds `stateless` and `stateful`: generate the complete StatelessWidget / StatefulWidget + State.
+# - shortcuts `use material`, `use cupertino`... and automatic imports of the widgets.
+
+[dialect]
+name = "flutter"
+platform = "mobile"
+extends = "dart"
+description = "Flutter: stateless/stateful widgets, material imported automatically"
+# type definitions (spec/definitions.md), added to dart's: the Flutter SDK, the Dragonfly runtime
+# (packages/dragonfly) and the libraries it relies on. Each one brings its automatic
+# imports; dependencies (bloc) are loaded on their own.
+defs = [
+  "flutter@3.47.7",
+  "dragonfly@0.1.0",
+  "flutter_bloc@9.1.1",
+  "get_it@9.3.0",
+  "dio@5.11.1",
+  "go_router@18.1.1",
+  "connectivity_plus@7.3.2",
+  "flutter_secure_storage@11.2.0",
+  "json_annotation@4.12.0",
+]
+# in Dragonfly, WebSocket is the project config connection, not the dart:io class
+replaces = ["auto_imports.WebSocket", "auto_imports.Tool", "auto_imports.ToolResult", "auto_imports.Message", "auto_imports.SchemanticType", "auto_imports.ModelRef", "auto_imports.EmbedderRef", "auto_imports.GenkitPlugin", "auto_imports.Genkit", "auto_imports.Part", "auto_imports.TextPart", "auto_imports.Role"]
+
+# stateless MyApp + build → class MyApp extends StatelessWidget { const MyApp({super.key}); @override build }
+[kinds.stateless]
+description = "stateless Name(params) + build → StatelessWidget with a const constructor; @screen(route, providers, loggedIn, acl, shell) makes it a screen"
+imports = ["StatelessWidget", "MultiBlocProvider", "BlocProvider", "inject"]
+inherits = ["StatelessWidget"]     # build and the other StatelessWidget members get @override
+requires = ["build"]
+named_params = true
+template = { file = "templates/stateless.tpl" }
+
+# stateful Name(params) [with Mixin] + fields + build → StatefulWidget + State. Fields, methods and
+# mixins (`with SingleTickerProviderStateMixin`) go to the State;
+# the parameters stay in the widget and are read as widget.name.
+[kinds.stateful]
+description = "stateful Name(params) + fields + build → StatefulWidget and its State; @screen as in stateless"
+imports = ["StatefulWidget", "State", "MultiBlocProvider", "BlocProvider", "inject"]
+inherits = ["State"]               # setState, context, widget, mounted...; initState, build... llevan @override
+requires = ["build"]
+param_access = "widget.{{name}}"
+named_params = true
+template = { file = "templates/stateful.tpl" }
+
+[imports]
+material = "package:flutter/material.dart"
+cupertino = "package:flutter/cupertino.dart"
+widgets = "package:flutter/widgets.dart"
+services = "package:flutter/services.dart"
+foundation = "package:flutter/foundation.dart"
+animation = "package:flutter/animation.dart"
+gestures = "package:flutter/gestures.dart"
+painting = "package:flutter/painting.dart"
+rendering = "package:flutter/rendering.dart"
+
+# Automatic imports come from the type definitions (defs): every public name of the libraries
+# of the packages is imported on its own when used.
+
+
+# ---------------------------------------------------------------------------------------------------
+# Dragonfly: the clean architecture lite framework (spec/dragonfly.md). The classes these kinds use
+# are in the dragonfly package (packages/dragonfly).
+
+[decorators]
+# read by the templates (decor) and not written as Dart annotations
+consumed = [
+  "repository", "get", "post", "put", "patch", "delete", "path", "query", "body",
+  "stateModel", "state", "before", "after", "screen", "on", "requires", "acl",
+  "mock", "test", "widget", "states", "offline",
+  "splash",
+  "form", "validate", "required", "email", "url", "minLength", "maxLength", "min", "max", "pattern", "matches",
+  "key",
+  "remote", "flow", "stream",
+  "entity", "primary", "created", "updated",
+]
+# a method with @state returns nothing to its caller: its value becomes a state
+void = ["state"]
+
+# objects provided to a declaration: with @screen(providers = [CharactersManager]) on a screen,
+# CharactersManager.load() is that screen's manager
+[decorators.provide]
+"screen.providers" = "context.read<{{name}}>()"
+
+# the arguments of each decorator (N0217); `!` = required, `a.b` = field of object a
+[decorators.args]
+screen = [
+  "route", "providers",
+  "loggedIn", "loggedIn.forward!",
+  "acl", "acl.roles", "acl.permissions", "acl.guards", "acl.forward!",
+  "shell", "shell.widget!", "shell.tab!",
+  "notFound", "transition",
+]
+# the native launch screen (flutter_native_splash): background color and image from assets/
+splash = ["color!", "image"]
+requires = ["internet", "session"]
+acl = ["roles", "permissions", "guards"]
+required = ["message"]
+email = ["message"]
+url = ["message"]
+
+# global configuration: connections and services (Http, WebSocket, SessionManager, NetworkManager, Events)
+[kinds.appConfig]
+description = "appConfig Name + connections / globals → the project config (AppConfig)"
+inherits = ["AppConfig"]
+imports = ["AppConfig"]
+template = { file = "templates/appconfig.tpl" }
+[kinds.appConfig.syntax]
+field = "{{#override}}@override\n{{/override}}final {{#type}}{{type}}{{/type}}{{^type}}var{{/type}} {{name}}{{#default}} = {{default}}{{/default}};"
+
+# configuration of a component: its own connections and services
+[kinds.config]
+description = "config Name + connections / globals → the config of one component (ComponentConfig)"
+inherits = ["ComponentConfig"]
+imports = ["ComponentConfig"]
+template = { file = "templates/config.tpl" }
+[kinds.config.syntax]
+field = "{{#override}}@override\n{{/override}}final {{#type}}{{type}}{{/type}}{{^type}}var{{/type}} {{name}}{{#default}} = {{default}}{{/default}};"
+
+# data layer: each method without a body with @get/@post/@put/@patch/@delete is an http call. With
+# @repository(saveLocal = true) (or @get(local = true)) a GET that answers a model with @primary saves its rows in the
+# local database and gets a <method>AsLocal() twin that reads them without network; local<Model>() is the table
+[kinds.repository]
+description = "@repository(path, saveLocal) repository Name + @get/@post/... methods without body → http calls; saveLocal: a GET saves its rows locally and gets <method>AsLocal()"
+inherits = ["Repository"]
+imports = ["Repository", "HttpMethod", "Decode", "Cache"]
+async_methods = true
+template = { file = "templates/repository.tpl" }
+[kinds.repository.syntax]
+method_signature = { file = "templates/repository_method.tpl" }
+
+# use case: a single exec method that returns Result; receives its injected dependencies
+[kinds.usecase]
+description = "usecase Name(deps) + exec(...) Result<T, E> → one business operation"
+imports = ["Guards"]
+methods = ["exec"]
+returns = "Result"
+template = { file = "templates/injectable.tpl" }
+[kinds.usecase.syntax]
+method = { file = "templates/usecase_method.tpl" }
+
+# component facade: the only thing other components see
+[kinds.appcomponent]
+description = "appcomponent Name + aliases to usecases → the facade of a component"
+imports = ["inject"]
+alias_via = "inject"
+template = { file = "templates/injectable.tpl" }
+
+[kinds.service]
+description = "service Name(deps) + methods → helpers of the usecases (mapping, transformations)"
+template = { file = "templates/injectable.tpl" }
+
+[kinds.aggregate]
+description = "aggregate Name(deps) + methods → business aggregate used by usecases"
+template = { file = "templates/injectable.tpl" }
+
+# state of a screen: a Cubit whose state is a state model
+[kinds.statemanager]
+description = "@stateModel(S) statemanager Name(deps) + @state methods → the state of a screen (Cubit<S>)"
+inherits = ["StateManager"]
+imports = ["StateManager"]
+template = { file = "templates/statemanager.tpl" }
+[kinds.statemanager.syntax]
+constructor = """
+{{class_name}}({{params}}) : super(const {{owner_decor.stateModel.arg}}.initial()){{#body}} {
+  {{body}}
+}{{/body}}{{^body}};{{/body}}"""
+method = { file = "templates/statemanager_method.tpl" }
+method_signature = { file = "templates/statemanager_signature.tpl" }
+
+# form model (presentation/<screen>/forms): the fields of a form and their rules (@required, @email,
+# @minLength(n)...), like zod or class-validator. The form widgets are bound by the field name.
+[kinds.form]
+description = "Name + fields with @required/@email/@minLength(n)... in presentation/*/forms → a form model (fields, rules, initial values)"
+imports = ["Rule", "Rules"]
+template = { file = "templates/form.tpl" }
+
+# state of a form: validates the fields of its form model and runs the remote validations (@validate)
+[kinds.formmanager]
+description = "@form(F) formmanager Name(deps) + @validate(field) methods → the validation state of a form (FormManager<F>)"
+inherits = ["FormManager"]
+imports = ["FormManager", "FieldCheck"]
+template = { file = "templates/formmanager.tpl" }
+[kinds.formmanager.syntax]
+constructor = """
+{{class_name}}({{params}}) : super({{owner_decor.form.arg}}.rules, {{owner_decor.form.arg}}.initial, {{owner_decor.form.arg}}.fromValues){{#body}} {
+  {{body}}
+}{{/body}}{{^body}};{{/body}}"""
+
+# state model: each field is a state of the screen (booleans carry no data)
+[kinds.statemodel]
+description = "Name(field: T, flag: boolean) in state_models/ → states + Name.field(...) constructors + NameBuilder"
+imports = ["StateStreamable", "StatelessWidget", "Widget", "BuildContext", "BlocBuilder", "SizedBox", "listEquals"]
+declares = ["{{name}}Builder", "{{name}}Status"]
+template = { file = "templates/statemodel.tpl" }
+
+# domain model: only the fields; json_serializable writes fromJson / toJson. @key("json_name") on a
+# field is its name in the JSON; @Converter, the converter that reads and writes it. @primary (or @generated) on a
+# field gives the model a local table (`Model.table`, a LocalTable); @created / @updated are stamped by it
+[kinds.model]
+description = "@entity(table) Name + fields in domain/models → immutable class with fromJson/toJson (json_serializable); @primary gives it a local table"
+imports = ["JsonSerializable", "listEquals", "LocalTable"]
+file_header = "part '{{file}}.g.dart';"
+template = { file = "templates/model.tpl" }
+
+# JSON converter of a model field (@Name on the field): the types come from the fromJson signature
+[kinds.converter]
+description = "converter Name + fromJson(json: J) T + toJson(value: T) J (+ sample() T for generated tests) → JsonConverter<T, J>; a model field uses it as @Name"
+inherits = ["JsonConverter"]
+imports = ["JsonConverter"]
+methods = ["fromJson", "toJson", "sample"]
+requires = ["fromJson", "toJson"]
+template = { file = "templates/converter.tpl" }
+
+# global component (shared/components): a cross-cutting use case any declaration can use;
+# a method with @on(Event) is called with every event of that type, wherever the user is
+[kinds.component]
+description = "component Name(deps) + methods; @on(Event) methods run on every event → a global component (shared/components)"
+template = { file = "templates/injectable.tpl" }
+
+# guard (like NestJS CanActivate): an access check with its injected dependencies; used in
+# @screen(acl = { guards: [Name], forward: ... }) and in @acl(guards = [Name]) of a use case
+[kinds.guard]
+description = "guard Name(deps) + canActivate() boolean → a custom access check (Guard)"
+inherits = ["Guard"]
+imports = ["Guard"]
+methods = ["canActivate"]
+template = { file = "templates/guard.tpl" }
+
+# global event (pub/sub): Events.publish(Name(...)), Events.subscribe<Name>(...), EventBuilder<Name>
+[kinds.event]
+description = "event Name + fields → a global event (AppEvent) with fromJson/toJson, so another engine (workmanager) can publish it"
+imports = ["AppEvent", "JsonSerializable"]
+file_header = "part '{{file}}.g.dart';"
+template = { file = "templates/event.tpl" }
+
+[docs]
+"package:flutter/" = "https://api.flutter.dev/flutter/{{library}}/{{name}}{{#class}}-class{{/class}}.html"
+
+# The editor's side of a mobile project (its VS Code workspace, written by `dragonfly build`): the Dart and Flutter
+# extensions run the app of build/app; saving a .nuc transpiles it and hot reloads (task `dragonfly: watch`).
+[toolchain]
+installed = ".dart_tool"
+extensions = ["Dart-Code.flutter", "Dart-Code.dart-code"]
+
+[toolchain.settings]
+"dart.previewHotReloadOnSaveWatcher" = true
+"dart.flutterHotReloadOnSave" = "all"
+"task.allowAutomaticTasks" = "on"
+
+[[toolchain.launch]]
+name = "{{name}} (debug)"
+type = "dart"
+request = "launch"
+program = "lib/main.dart"
+cwd = "{{app}}"
+flutterMode = "debug"
+preLaunchTask = "dragonfly: build"
+
+[[toolchain.launch]]
+name = "{{name}} (profile)"
+type = "dart"
+request = "launch"
+program = "lib/main.dart"
+cwd = "{{app}}"
+flutterMode = "profile"
+preLaunchTask = "dragonfly: build"
+
+[[toolchain.launch]]
+name = "{{name}} (release)"
+type = "dart"
+request = "launch"
+program = "lib/main.dart"
+cwd = "{{app}}"
+flutterMode = "release"
+preLaunchTask = "dragonfly: build"
+
+[project]
+sources = "lib"
+# a Dragonfly project has no nuclear.toml: the folder with main.nuc is a flutter project, built in build/app
+marker = "main.nuc"
+output = "build/app"
+# the translation dictionaries (assets/i18n/<locale>/<component>.json) are copied to the app
+assets = ["assets"]
+
+# config.nuc (at the root): the project pubspec written in Nuclear. It is not transpiled: the dragonfly CLI
+# reads it to write the app's pubspec.yaml (with the packages Dragonfly adds on its own) and to load the
+# type definitions of the `dependencies` packages.
+[project.manifest]
+file = "config.nuc"
+sections = ["dragonfly", "app", "environment", "dependencies", "devDependencies", "plugins", "contracts"]
+# only third-party packages the framework does not use: the ones in `defs` (dio, go_router, flutter_bloc...) and
+# these, which Dragonfly or `flutter create` add on their own, cannot be written (N0303)
+packages = ["dependencies", "devDependencies"]
+reserved = [
+  "fpdart", "build_runner", "json_serializable", "mocktail", "bloc_test", "integration_test",
+  "flutter_native_splash", "flutter_test", "flutter_lints", "cupertino_icons",
+]
+
+# the kind of declarations without a header word, by folder
+[project.kinds]
+"components/*/domain/models" = "model"
+"contracts/*/models" = "model"
+"shared/models" = "model"
+"components/*/presentation/*/state_models" = "statemodel"
+"components/*/presentation/state_models" = "statemodel"
+"components/*/presentation/*/forms" = "form"
+"components/*/presentation/forms" = "form"
+"test" = "tests"
+"integration_test" = "integration"
+
+# plugins(genkit = true, googleAI = true) in config.nuc: the optional parts of Dragonfly; the CLI adds their packages
+# to the app only when they are enabled
+[project.plugins.genkit]
+description = "Genkit Dart in the app: the tools, flow, chat, remote and knowledge kinds (add a provider: googleAI, firebaseAI, vertexAI, openAI, anthropic)"
+packages = { genkit = "^1.0.1", schemantic = "^1.0.0", dragonfly_genkit = "local" }
+defs = ["genkit@1.0.1", "schemantic@1.0.0", "dragonfly_genkit@0.1.0"]
+kinds = ["tools", "flow", "chat", "remote", "knowledge"]
+
+[project.plugins.firebaseAI]
+description = "Gemini through Firebase AI Logic (App Check, no API key in the app): FirebaseAI(model = \"gemini-flash-latest\"); the app needs Firebase configured (flutterfire configure)"
+packages = { genkit_firebase_ai = "^0.4.0", firebase_core = "^4.0.0" }
+requires = ["genkit"]
+names = ["FirebaseAI"]
+
+[project.plugins.googleAI]
+description = "Gemini with an API key (GEMINI_API_KEY): GoogleAI(model = \"gemini-flash-latest\", embedder = \"text-embedding-004\")"
+packages = { genkit_google_genai = "^1.0.1" }
+requires = ["genkit"]
+names = ["GoogleAI"]
+
+[project.plugins.vertexAI]
+description = "Vertex AI on Google Cloud: VertexAI(model = \"gemini-flash-latest\", projectId = \"...\", location = \"us-central1\")"
+packages = { genkit_vertexai = "^1.0.1" }
+requires = ["genkit"]
+names = ["VertexAI"]
+
+[project.plugins.openAI]
+description = "OpenAI, or an OpenAI-compatible server such as a local Ollama: OpenAI(model = \"gpt-4o-mini\"), OpenAI(model = \"qwen3.5:4b\", baseUrl = \"http://localhost:11434/v1\", apiKey = \"ollama\")"
+packages = { genkit_openai = "^1.0.1" }
+requires = ["genkit"]
+names = ["OpenAI"]
+
+[project.plugins.anthropic]
+description = "Anthropic's Claude models (ANTHROPIC_API_KEY): Anthropic(model = \"claude-sonnet-4-5\")"
+packages = { genkit_anthropic = "^1.0.1" }
+requires = ["genkit"]
+names = ["Anthropic"]
+
+[project.files."lib/dragonfly_genkit.g.dart"]
+names = ["startGenkit"]
+template = { file = "templates/genkit_g.tpl" }
+
+[project.files."lib/dragonfly.g.dart"]
+names = ["startDragonfly", "appRouter", "buildRouter", "dragonflyConfig", "registerDragonfly"]
+template = { file = "templates/dragonfly_g.tpl" }
+
+# the native splash configuration (@splash), only if some screen has it; the CLI runs
+# flutter_native_splash:create with it
+[project.files."flutter_native_splash.yaml"]
+template = { file = "templates/native_splash.tpl" }
+
+# tests every app gets without writing them (spec/dragonfly.md §7)
+[project.files."test/dragonfly_generated_test.dart"]
+template = { file = "templates/generated_tests.tpl" }
+
+# tests do not go to lib/: the app's test/ and integration_test/
+[project.outputs]
+"test" = "test"
+"integration_test" = "integration_test"
+
+# nuclear-flutter-lints: architecture rules (N0301, N0302)
+# Log.d/i/s/w/e(...) also receive where they are written: the breadcrumb of the console (component › kind ›
+# Class.method) and the .nuc line. A constant: it costs nothing at run time.
+[call_site.Log]
+arg = "at"
+text = "{{#component}}{{component}}{{/component}}{{^component}}app{{/component}}{{#kind}} › {{kind}}{{/kind}}{{#module}} › {{module}}{{#method}}.{{method}}{{/method}}{{/module}}{{^module}}{{#method}} › {{method}}{{/method}}{{/module}}{{#path}} · {{path}}.nuc:{{line}}{{/path}}"
+
+[architecture]
+scope = "components"
+# and the screens (@screen): navigation goes from one component to another
+public = ["appcomponent", "model", "converter", "event", "component", "guard", "@screen"]
+# tests can use any declaration of the project
+exempt = ["tests", "integration"]
+
+# navigation is 100% in the views: only a widget has a context and a router
+[architecture.names]
+BuildContext = ["stateless", "stateful"]
+GoRouter = ["stateless", "stateful"]
+GoRouterState = ["stateless", "stateful"]
+appRouter = ["stateless", "stateful"]
+
+[architecture.callers]
+usecase = ["appcomponent"]
+service = ["usecase", "aggregate"]
+aggregate = ["usecase"]
+repository = ["usecase", "aggregate"]
+
+# tests (spec/dragonfly.md §7): one group per file in test/; each method with @test, @widget or @states is
+# a test; a method without a decorator is setUp, tearDown, setUpAll or tearDownAll. @mock([X]) creates a mock
+# of X (mocktail) and puts it in the injector; inside, X.method() uses the injector's instance.
+[kinds.tests]
+description = "@mock([Repository]) tests Name + @test/@widget/@states methods → a flutter_test group"
+template = { file = "templates/tests.tpl" }
+results = "keep"
+void_methods = true
+provide = { template = "inject<{{name}}>()", kinds = ["repository", "usecase", "appcomponent", "service", "aggregate", "statemanager", "formmanager"] }
+imports = ["Mock", "DragonflyTest", "dragonflyConfig", "registerDragonfly", "NetworkStatus", "group", "setUp", "test", "testWidgets", "blocTest", "inject"]
+[kinds.tests.syntax]
+method = { file = "templates/tests_method.tpl" }
+
+# integration tests: the real app on a device or emulator (dragonfly test --integration)
+[kinds.integration]
+description = "tests Name in integration_test/ → integration tests on a device"
+template = { file = "templates/integration.tpl" }
+results = "keep"
+void_methods = true
+provide = { template = "inject<{{name}}>()", kinds = ["repository", "usecase", "appcomponent", "service", "aggregate", "statemanager", "formmanager"] }
+imports = ["Mock", "DragonflyTest", "IntegrationTestWidgetsFlutterBinding", "group", "setUp", "test", "testWidgets", "blocTest", "inject"]
+[kinds.integration.syntax]
+method = { file = "templates/tests_method.tpl" }
+
+# --- Genkit (plugin genkit): tools, flows, chats, remote flows, knowledge ---
+[kinds.tools]
+description = "tools Name(deps) + methods with a doc comment → Genkit tools (the doc comment is what the model reads; a method without one is a helper)"
+inherits = ["Tools"]
+imports = ["Tools", "Tool", "ToolResult", "Schemas"]
+template = { file = "templates/genkit_tools.tpl" }
+
+[kinds.flow]
+description = "flow Name(deps) + run(input: I) O → a Genkit flow (traces, Developer UI); call it like a function: ~summarize(text)"
+inherits = ["GenkitFlow"]
+imports = ["GenkitFlow"]
+methods = ["run"]
+requires = ["run"]
+async_methods = true
+template = { file = "templates/genkit_flow.tpl" }
+
+[kinds.chat]
+description = "chat Name(tools: SomeTools) + prompt = \"...\", model = \"\" → a conversation with memory: ~chat.send(text), chat.stream(text), ChatController(chat) for a screen"
+inherits = ["Chat"]
+imports = ["Chat"]
+template = { file = "templates/genkit_chat.tpl" }
+[kinds.chat.syntax]
+field = "{{#override}}@override\n{{/override}}final {{#type}}{{type}}{{/type}}{{^type}}var{{/type}} {{name}}{{#default}} = {{default}}{{/default}};"
+
+[kinds.remote]
+description = "@remote(\"https://server\") remote Name + @flow(\"path\") / @stream(\"path\") methods without body → flows of a Genkit server, typed"
+inherits = ["RemoteFlows"]
+imports = ["RemoteFlows"]
+template = { file = "templates/genkit_remote.tpl" }
+[kinds.remote.syntax]
+method_signature = { file = "templates/genkit_remote_method.tpl" }
+
+[kinds.knowledge]
+description = "knowledge Name(deps) + documents() string[] → texts searched by meaning (embeddings): ~facts.search(question), ~facts.context(question)"
+inherits = ["Knowledge"]
+imports = ["Knowledge"]
+async_methods = true
+template = { file = "templates/genkit_knowledge.tpl" }
+[kinds.knowledge.syntax]
+field = "{{#override}}@override\n{{/override}}final {{#type}}{{type}}{{/type}}{{^type}}var{{/type}} {{name}}{{#default}} = {{default}}{{/default}};"
+
+# extension methods (imported when the code writes them): navigation by screen
+# (context.goTo(Screen(...)), context.pushTo(...), context.goBack(value)) and test helpers
+[names]
+written = ["tr", "goTo", "pushTo", "goBack", "pumpScreen", "pumpRouter", "tapText", "enterTextIn", "thenReturnAsync"]
+
+[auto_imports]
+# in Dragonfly, WebSocket is the project config connection (see replaces in [dialect]); goTo, pushTo and
+# goBack are BuildContext methods (DragonflyNavigation extension) and tr a String one (DragonflyTranslate)
+"package:dragonfly/dragonfly.dart" = ["WebSocket", "tr", "goTo", "pushTo", "goBack"]
+# the Genkit names dragonfly_genkit re-exports: imported from it, once
+"package:dragonfly_genkit/dragonfly_genkit.dart" = ["Tool", "ToolResult", "Message", "SchemanticType", "ModelRef", "EmbedderRef", "GenkitPlugin", "Genkit", "Part", "TextPart", "Role"]
+# test names: flutter_test, mocktail, bloc_test, integration_test
+"package:flutter_test/flutter_test.dart" = [
+  "test", "testWidgets", "group", "setUp", "tearDown", "setUpAll", "tearDownAll", "expect", "expectLater",
+  "find", "findsOneWidget", "findsNothing", "findsWidgets", "findsNWidgets", "WidgetTester", "equals",
+  "isTrue", "isFalse", "isNull", "isNotNull", "isA", "isEmpty", "isNotEmpty", "hasLength", "contains",
+  "throwsA", "anything", "greaterThan", "lessThan", "isNot", "pumpEventQueue",
+]
+"package:dragonfly/testing.dart" = ["pumpScreen", "pumpRouter", "tapText", "enterTextIn", "thenReturnAsync"]
+"package:mocktail/mocktail.dart" = ["Mock", "when", "verify", "verifyNever", "any", "captureAny", "registerFallbackValue"]
+"package:bloc_test/bloc_test.dart" = ["blocTest"]
+"package:integration_test/integration_test.dart" = ["IntegrationTestWidgetsFlutterBinding"]
+
+# the platform's own members of the base types (spec/library.md allows a platform to extend them)
+[library.string]
+tr = "{{recv}}.tr({{args}})"   # a translation key: "characters.list.title".tr(), .tr({"page": 2})
+
+# Nuclear's Page<T> (ADR-0100: a page of a local query or of a backend's paged answer) is the runtime's PageOf<T>:
+# Flutter's widgets library has its own Page (the Navigator's).
+[types]
+Page = "PageOf"

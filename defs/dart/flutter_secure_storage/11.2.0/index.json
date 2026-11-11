@@ -1,0 +1,42 @@
+{
+"format": 1,
+"libraries": ["package:flutter_secure_storage/flutter_secure_storage.dart"],
+"reexports": {},
+"symbols": {
+  "AccessControlFlag": 0,
+  "AndroidBiometricType": 0,
+  "AndroidOptions": 0,
+  "AppleOptions": 0,
+  "FlutterSecureStorage": 0,
+  "IOSOptions": 0,
+  "KeyCipherAlgorithm": 0,
+  "KeychainAccessibility": 0,
+  "LinuxOptions": 0,
+  "MacOsOptions": 0,
+  "SecureStorageUpgradeReason": 0,
+  "SecureStorageUpgradeState": 0,
+  "SecureStorageUpgradeStatus": 0,
+  "StorageCipherAlgorithm": 0,
+  "WebOptions": 0,
+  "WindowsOptions": 0
+},
+"classes": {
+  "AccessControlFlag": {"supers":["Enum"],"members":[]},
+  "AndroidBiometricType": {"supers":["Enum"],"members":[]},
+  "AndroidOptions": {"supers":["Options"],"members":["biometricPromptNegativeButton","biometricPromptSubtitle","biometricPromptTitle","copyWith","preferencesKeyPrefix","storageNamespace","toMap"],"params":["resetOnError","migrateOnAlgorithmChange","migrateWithBackup","enforceBiometrics","requireBiometricsPerOperation","keyCipherAlgorithm","storageCipherAlgorithm","biometricType","requireBiometricConfirmation","preferencesKeyPrefix","storageNamespace","biometricPromptTitle","biometricPromptSubtitle","biometricPromptNegativeButton"]},
+  "AppleOptions": {"supers":["Options"],"members":["accessControlFlags","accessibility","accountName","authenticationUIBehavior","comment","creationDate","description","groupId","isInvisible","isNegative","label","lastModifiedDate","resultLimit","shouldReturnPersistentReference","synchronizable","toMap","useSecureEnclave"],"params":["accountName","groupId","accessibility","synchronizable","label","description","comment","isInvisible","isNegative","creationDate","lastModifiedDate","resultLimit","shouldReturnPersistentReference","authenticationUIBehavior","accessControlFlags","useSecureEnclave"]},
+  "FlutterSecureStorage": {"supers":["Object"],"members":["aOptions","checkUpgradeStatus","containsKey","delete","deleteAll","getListeners","iOptions","isCupertinoProtectedDataAvailable","lOptions","mOptions","onCupertinoProtectedDataAvailabilityChanged","read","readAll","registerListener","unregisterAllListeners","unregisterAllListenersForKey","unregisterListener","wOptions","webOptions","write"],"params":["iOptions","aOptions","lOptions","wOptions","webOptions","mOptions"]},
+  "IOSOptions": {"supers":["AppleOptions"],"members":["toMap"],"params":["accountName","groupId","accessibility","synchronizable","label","description","comment","isInvisible","isNegative","creationDate","lastModifiedDate","resultLimit","shouldReturnPersistentReference","authenticationUIBehavior","accessControlFlags","useSecureEnclave"]},
+  "KeyCipherAlgorithm": {"supers":["Enum"],"members":[]},
+  "KeychainAccessibility": {"supers":["Enum"],"members":[]},
+  "LinuxOptions": {"supers":["Options"],"members":["toMap"],"params":[]},
+  "MacOsOptions": {"supers":["AppleOptions"],"members":["toMap","usesDataProtectionKeychain"],"params":["accountName","groupId","accessibility","synchronizable","label","description","comment","isInvisible","isNegative","creationDate","lastModifiedDate","resultLimit","shouldReturnPersistentReference","authenticationUIBehavior","accessControlFlags","usesDataProtectionKeychain","useSecureEnclave"]},
+  "Options": {"supers":["Object"],"members":["params","toMap"],"params":[]},
+  "SecureStorageUpgradeReason": {"supers":["Enum"],"members":[]},
+  "SecureStorageUpgradeState": {"supers":["Enum"],"members":[]},
+  "SecureStorageUpgradeStatus": {"supers":["Object"],"members":["details","entryCount","hasDataLoss","hashCode","reason","state","toString","willDiscardOnNextAccess"],"params":["state","reason","entryCount","willDiscardOnNextAccess","details"]},
+  "StorageCipherAlgorithm": {"supers":["Enum"],"members":[]},
+  "WebOptions": {"supers":["Options"],"members":["dbName","publicKey","toMap","useSessionStorage","wrapKey","wrapKeyIv"],"params":["dbName","publicKey","wrapKey","wrapKeyIv","useSessionStorage"]},
+  "WindowsOptions": {"supers":["Options"],"members":["copyWith","toMap"],"params":["useBackwardCompatibility"]}
+}
+}

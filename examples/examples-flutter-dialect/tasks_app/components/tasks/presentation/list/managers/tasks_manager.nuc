@@ -1,0 +1,12 @@
+@stateModel(TasksState)
+statemanager TasksManager
+  (tasks: TasksComponent)
+    load()
+
+  @state(TasksState.loading)
+  loading()
+
+  @before(loading)
+  @state(TasksState.loaded)
+  load() Result<TasksApiError, Task[]>
+    ~tasks.pending()

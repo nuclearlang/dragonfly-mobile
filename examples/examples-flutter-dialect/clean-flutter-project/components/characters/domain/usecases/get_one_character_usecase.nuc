@@ -1,0 +1,5 @@
+usecase GetOneCharacterUseCase
+  (repository: CharacterRepository)
+
+  exec(id: int) Result<CharacterError, Character>
+    ~repository.getOne(id)

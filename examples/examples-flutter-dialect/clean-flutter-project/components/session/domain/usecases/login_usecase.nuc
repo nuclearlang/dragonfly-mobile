@@ -1,0 +1,11 @@
+// Starts the session: the token goes in every request and the ACL checks the roles. session.start publishes
+// SessionStarted, and every screen with GlobalEvents or @screen(loggedIn) is notified.
+usecase LoginUseCase
+  (repository: AuthRepository, session: SessionManager)
+
+  exec(user: string, pass: string) Result<AuthError, Auth>
+    auth = ~repository.login(LoginParams(user = user, pass = pass))
+    ~session.start(auth, token = auth.token, roles = auth.roles)
+    // the token is masked in the log: ***
+    Log.i("session started", data = { "user": user, "token": auth.token })
+    Ok(auth)

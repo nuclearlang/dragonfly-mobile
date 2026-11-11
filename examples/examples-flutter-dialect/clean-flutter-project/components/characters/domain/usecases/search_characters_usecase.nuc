@@ -1,0 +1,6 @@
+usecase SearchCharactersUseCase
+  (repository: CharacterRepository)
+
+  exec(name: string) Result<CharacterError, Character[]>
+    page = ~repository.search(name)
+    Ok(page.results)

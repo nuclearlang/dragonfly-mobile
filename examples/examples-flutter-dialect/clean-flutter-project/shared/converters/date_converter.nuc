@@ -1,0 +1,6 @@
+// The API sends dates as ISO 8601 text ("2017-11-10T12:56:33.798Z").
+converter DateConverter
+  fromJson(json: string) DateTime
+    DateTime.parse(json)!
+  toJson(value: DateTime) string
+    value.toIso()

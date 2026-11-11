@@ -1,0 +1,26 @@
+// Global configuration: connections and services of the whole app, and how the local database is kept
+// (encrypted = true is the default; a component's config may set `local` for the tables of its own models).
+appConfig ProjectConfig
+  local: LocalDatabase = LocalDatabase(encrypted = true)
+  connections: Connection[] = [
+    Http(
+      baseUrl = "https://rickandmortyapi.com/api/",
+      connectTimeout = Duration(seconds = 5),
+      receiveTimeout = Duration(seconds = 3),
+      interceptors = [
+        SessionInterceptor(),
+        EventInterceptor(events = { "force_logout": () => ForceLogout() }),
+        HttpLogInterceptor(),
+      ],
+    ),
+    WebSocket(connectionName = "live", uri = "wss://example.com/live"),
+  ]
+  globals: Global[] = [
+    Events(),
+    SessionManager(timeout = Duration(minutes = 30)),
+    Acl(inherits = { "admin": ["fan"] }),
+    NetworkManager(),
+    // assets/i18n/<locale>/<component>.json; with remote = RemoteDictionaries(url = "https://...") the
+    // dictionaries are downloaded by version and win over the app's
+    Translations(locales = ["en", "es"], fallback = "en"),
+  ]

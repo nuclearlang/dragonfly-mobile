@@ -1,0 +1,19 @@
+{
+"format": 1,
+"libraries": ["package:connectivity_plus/connectivity_plus.dart"],
+"reexports": {},
+"symbols": {
+  "Connectivity": 0,
+  "ConnectivityPlusLinuxPlugin": 0,
+  "ConnectivityResult": 0,
+  "ConnectivityResultListX": 0,
+  "NetworkManagerClientFactory": 0
+},
+"classes": {
+  "Connectivity": {"supers":["Object"],"members":["checkConnectivity","onConnectivityChanged"],"params":[]},
+  "ConnectivityPlatform": {"supers":["PlatformInterface"],"members":["checkConnectivity","onConnectivityChanged"],"params":[]},
+  "ConnectivityPlusLinuxPlugin": {"supers":["ConnectivityPlatform"],"members":["checkConnectivity","createClient","onConnectivityChanged"],"params":[]},
+  "ConnectivityResult": {"supers":["Enum"],"members":[]},
+  "PlatformInterface": {"supers":["Object"],"members":[],"params":["token"]}
+}
+}

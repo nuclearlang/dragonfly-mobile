@@ -1,0 +1,30 @@
+// Tab 0 of MainShell. GlobalEvents shows the name of whoever signed in and changes only when the
+// session starts or ends (if the screen is not visible, it changes when coming back to it).
+@screen(route = "/", providers = [CharactersManager], shell = { widget: MainShell, tab: 0 })
+stateless CharacterListScreen
+  build(context: BuildContext) Widget
+    Scaffold(
+      appBar = AppBar(
+        title = Text("characters.list.title".tr()),
+        actions = [
+          GlobalEvents<Auth>(
+            sessionStarted = (auth) => Padding(padding = EdgeInsets.all(16), child = Text(auth.name)),
+            sessionEnded = (e) => TextButton(onPressed = () => context.goTo(LoginScreen()), child = Text("session.login.title".tr())),
+          ),
+        ],
+      ),
+      body = CharactersStateBuilder<CharactersManager>(
+        loading = () => Center(child = CircularProgressIndicator()),
+        full = (characters) => ListView.builder(
+          itemCount = characters.length,
+          itemBuilder = (context, index) => CharacterTile(character = characters[index]),
+        ),
+        error = (e) => Center(child = Text(e.message)),
+      ),
+      floatingActionButton = FloatingActionButton(
+        onPressed = () =>
+          CharactersManager.loadPage(2)
+          Popups.toast(context, "characters.list.loading".tr({ "page": 2 }))
+        child = Icon(Icons.refresh),
+      ),
+    )

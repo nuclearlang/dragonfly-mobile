@@ -1,0 +1,17 @@
+// The tools of the assistant: notes kept in memory.
+tools NoteTools
+  notes: string[] = []
+
+  // Saves a note with the given text.
+  addNote(text: string) string
+    notes.add(text)
+    "saved note ${notes.length}: ${text}"
+
+  // Lists every saved note, one per line.
+  listNotes() string
+    if notes.isEmpty
+      return "there are no notes"
+    numbered(notes)
+
+  numbered(items: string[]) string
+    (0..items.length).map((i) => "${i + 1}. ${items[i]}").join("\n")

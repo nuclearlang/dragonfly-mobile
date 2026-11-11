@@ -1,0 +1,5 @@
+// The connection named like the contract: every generated repository of tasks_api uses it.
+appConfig ProjectConfig
+  connections: Connection[] = [
+    Http(connectionName = "tasks_api", baseUrl = "http://localhost:3000/"),
+  ]

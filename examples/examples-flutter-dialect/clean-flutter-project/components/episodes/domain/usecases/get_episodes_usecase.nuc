@@ -1,0 +1,6 @@
+usecase GetEpisodesUseCase
+  (repository: EpisodeRepository)
+
+  exec(ids: int[]) Result<string, Episode[]>
+    episodes = ~repository.getMany(ids.join(","))
+    Ok(episodes)

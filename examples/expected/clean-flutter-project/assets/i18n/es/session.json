@@ -1,0 +1,15 @@
+{
+  "login": {
+    "title": "Entrar",
+    "user": "Usuario",
+    "pass": "Contraseña",
+    "submit": "Entrar",
+    "hi": "Hola {name}",
+    "shortPass": "La contraseña es muy corta",
+    "unknownUser": "No es un personaje de la serie"
+  },
+  "logout": {
+    "title": "Cerrar sesión",
+    "message": "¿Quieres terminar la sesión?"
+  }
+}

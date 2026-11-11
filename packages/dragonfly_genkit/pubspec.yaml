@@ -1,0 +1,26 @@
+name: dragonfly_genkit
+description: >-
+  Genkit for Dragonfly apps: AI providers in the project config (Firebase AI, Google AI, Vertex AI, OpenAI,
+  Anthropic), tools, flows, chats with streaming, remote Genkit flows and a small knowledge base (embeddings + search).
+  The runtime of the genkit plugin of NuclearLang's flutter dialect.
+version: 0.1.0
+repository: https://github.com/nuclearlang/dragonfly-mobile/tree/main/packages/dragonfly_genkit
+homepage: https://nuclearlang.github.io
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+  flutter: ">=3.44.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  dragonfly:
+    path: ../dragonfly
+  genkit: ^1.0.1
+  schemantic: ^1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any

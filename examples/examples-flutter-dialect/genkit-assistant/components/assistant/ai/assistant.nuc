@@ -1,0 +1,3 @@
+// The assistant of the chat screen: it keeps notes with its tools.
+chat Assistant(notes: NoteTools)
+  prompt: string = "You are a helpful assistant. Use the tools to save and list notes. Answer briefly."

@@ -1,0 +1,19 @@
+// What the backend returns on sign-in; it is stored as the session data (session.start).
+Auth
+  userId: string
+  name: string
+  token: string
+  roles: string[]
+  plan: Plan = Plan.free
+
+LoginParams
+  user: string
+  pass: string
+
+AuthError
+  message: string
+
+// What the user pays for; the backend does not send it yet, so it starts free.
+Plan
+  free
+  premium

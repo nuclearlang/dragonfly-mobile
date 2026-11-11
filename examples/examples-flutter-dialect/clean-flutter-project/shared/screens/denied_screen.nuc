@@ -1,0 +1,7 @@
+@screen(route = "/denied")
+stateless DeniedScreen
+  build(context: BuildContext) Widget
+    Scaffold(
+      appBar = AppBar(title = Text("Access denied")),
+      body = Center(child = Text("You cannot open this screen")),
+    )

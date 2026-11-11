@@ -1,0 +1,31 @@
+# The contract of the mobile platform (spec/mobile.md, ADR-0093): what every dialect of dialects/mobile/ must
+# implement, identically. The loader refuses a dialect whose kinds, consumed decorators or plugins leave this
+# list, and reports the platform plugins a dialect does not bring yet.
+[platform]
+# the dialect a new project of this platform gets when none is named (`dragonfly new -p <platform>`)
+default_dialect = "flutter"
+name = "mobile"
+description = "apps for Android, iOS, desktop and web through one UI toolkit"
+kinds = [
+  "stateless", "stateful", "appConfig", "config", "repository", "usecase", "appcomponent", "service",
+  "aggregate", "statemanager", "statemodel", "model", "converter", "form", "formmanager", "component", "guard",
+  "event", "tests", "integration", "tools", "flow", "chat", "remote", "knowledge",
+]
+# the decorators a project may write (a dialect consumes them in its templates or writes them as the target's)
+decorators = [
+  "repository", "get", "post", "put", "patch", "delete", "path", "query", "body",
+  "stateModel", "state", "before", "after", "screen", "on", "requires", "acl",
+  "mock", "test", "widget", "states", "offline", "splash",
+  "form", "validate", "required", "email", "url", "minLength", "maxLength", "min", "max", "pattern", "matches",
+  "key", "remote", "flow", "stream",
+  "entity", "primary", "created", "updated",
+]
+plugins = ["genkit", "firebaseAI", "googleAI", "vertexAI", "openAI", "anthropic"]
+
+# The arguments of the data decorators (ADR-0100), the same as the backend platform's.
+[decorators.args]
+primary = ["generated", "length"]
+
+# N0309: a removed decorator and what replaces it
+[decorators.replaced]
+generated = "@primary(generated = true) (ADR-0100)"

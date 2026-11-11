@@ -1,0 +1,14 @@
+main() void
+  ~startDragonfly()
+  runApp(App())
+
+stateless App
+  build(context: BuildContext) Widget
+    MaterialApp.router(
+      title = "shared.app.title".tr(),
+      locale = Translations.locale,
+      supportedLocales = Translations.supportedLocales,
+      localizationsDelegates = Translations.delegates,
+      routerConfig = appRouter,
+      builder = (context, child) => NetworkWrapper(offline = OfflineBanner(), child = child!),
+    )

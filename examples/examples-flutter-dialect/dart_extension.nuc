@@ -1,0 +1,33 @@
+// Dialecto dart.
+// `extension`, `mixin` and `data` are kinds, `with` is a clause, `abstract` a modifier:
+// they all come from dialects/dart/dialect.toml, not from the base language.
+
+extension NumberParsing on String
+  parseInt() int
+    this.toInt()!
+
+Animal
+  name: string = ""
+
+mixin Flyer on Animal
+  fly() string
+    "${name} is flying"
+
+Bird: Animal with Flyer
+
+abstract Shape
+  area() double
+
+Circle: Shape
+  (radius: double)
+
+  area() double
+    3.14 * radius * radius
+
+// code generation: constructor, copyWith and toJson come from the kind's template
+data Point
+  x: double
+  y: double
+
+  distance() double
+    sqrt(x * x + y * y)

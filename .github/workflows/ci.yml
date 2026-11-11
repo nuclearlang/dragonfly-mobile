@@ -1,0 +1,54 @@
+# The mobile platform: the flutter dialect against its examples and goldens, the Dart runtimes, an app built and tested.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: nuclearlang/nuclear
+          path: nuclear
+      - uses: actions/checkout@v4
+        with:
+          path: nuclear/dragonfly-mobile
+      - name: The other repositories of the working tree
+        run: |
+          git clone --depth 1 https://github.com/nuclearlang/dragonfly nuclear/dragonfly
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: "The dialect: examples and goldens"
+        working-directory: nuclear
+        run: |
+          cargo test
+      - name: "The spec's examples"
+        working-directory: nuclear
+        run: |
+          python3 dragonfly-mobile/tools/spec-check-dragonfly.py
+          python3 tools/spec-check/check.py dragonfly-mobile/spec/flutter.md flutter dart
+      - name: "The Dart runtimes"
+        working-directory: nuclear/dragonfly-mobile
+        run: |
+          cd packages/dragonfly && flutter pub get && flutter test && flutter analyze
+      - name: Install nuclear and dragonfly
+        run: |
+          cd nuclear && ./install.sh --no-vscode --no-zed --no-agent
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: "An app built and tested"
+        working-directory: nuclear/dragonfly-mobile/examples/examples-flutter-dialect/tasks_app
+        run: |
+          dragonfly build
+          dragonfly test

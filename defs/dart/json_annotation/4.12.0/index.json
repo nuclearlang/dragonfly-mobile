@@ -1,0 +1,33 @@
+{
+"format": 1,
+"libraries": ["package:json_annotation/json_annotation.dart"],
+"reexports": {},
+"symbols": {
+  "BadKeyException": 0,
+  "CheckedFromJsonException": 0,
+  "DisallowedNullValueException": 0,
+  "FieldRename": 0,
+  "JsonConverter": 0,
+  "JsonEnum": 0,
+  "JsonKey": 0,
+  "JsonLiteral": 0,
+  "JsonSerializable": 0,
+  "JsonValue": 0,
+  "MissingRequiredKeysException": 0,
+  "UnrecognizedKeysException": 0
+},
+"classes": {
+  "BadKeyException": {"supers":["Object","Exception"],"members":["map","message","toString"]},
+  "CheckedFromJsonException": {"supers":["Object","Exception"],"members":["badKey","className","innerError","innerStack","key","map","message","toString"],"params":["map","key","className","message","badKey"]},
+  "DisallowedNullValueException": {"supers":["BadKeyException"],"members":["keysWithNullValues","message"],"params":["keysWithNullValues","map"]},
+  "FieldRename": {"supers":["Enum"],"members":[]},
+  "JsonConverter": {"supers":["Object"],"members":["fromJson","toJson"],"params":[]},
+  "JsonEnum": {"supers":["Object"],"members":["alwaysCreate","fieldRename","valueField"],"params":["alwaysCreate","fieldRename","valueField"]},
+  "JsonKey": {"supers":["Object"],"members":["defaultValue","disallowNullValue","explicitJsonNullWhenNonNullField","fromJson","ignore","includeFromJson","includeIfNull","includeToJson","name","readValue","required","toJson","unknownEnumValue"],"params":["nullable","defaultValue","disallowNullValue","explicitJsonNullWhenNonNullField","fromJson","ignore","includeFromJson","includeIfNull","includeToJson","name","readValue","required","toJson","unknownEnumValue"]},
+  "JsonLiteral": {"supers":["Object"],"members":["asConst","path"],"params":["path","asConst"]},
+  "JsonSerializable": {"supers":["Object"],"members":["anyMap","checked","constructor","converters","createFactory","createFieldMap","createJsonKeys","createJsonSchema","createPerFieldToJson","createToJson","dateTimeUtc","disallowUnrecognizedKeys","explicitToJson","fieldRename","genericArgumentFactories","ignoreUnannotated","includeIfNull","toJson","withDefaults"],"params":["nullable","anyMap","checked","constructor","createFieldMap","createJsonKeys","createJsonSchema","createFactory","createToJson","disallowUnrecognizedKeys","explicitToJson","fieldRename","ignoreUnannotated","includeIfNull","converters","genericArgumentFactories","createPerFieldToJson","dateTimeUtc"]},
+  "JsonValue": {"supers":["Object"],"members":["value"],"params":["value"]},
+  "MissingRequiredKeysException": {"supers":["BadKeyException"],"members":["message","missingKeys"],"params":["missingKeys","map"]},
+  "UnrecognizedKeysException": {"supers":["BadKeyException"],"members":["allowedKeys","message","unrecognizedKeys"],"params":["unrecognizedKeys","map","allowedKeys"]}
+}
+}
