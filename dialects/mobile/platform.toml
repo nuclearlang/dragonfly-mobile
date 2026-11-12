@@ -29,3 +29,257 @@ primary = ["generated", "length"]
 # N0309: a removed decorator and what replaces it
 [decorators.replaced]
 generated = "@primary(generated = true) (ADR-0100)"
+
+# Where each kind's file goes (`nuclear help layout --dialect <d>`): what `dragonfly make` and agents follow.
+# {component} is the component's folder, {screen} the screen's folder (views and their managers), {file} the
+# declaration's name in snake_case.
+[layout]
+appConfig = "config/project_config.nuc"
+config = "components/{component}/config/{component}_config.nuc"
+repository = "components/{component}/data/{file}.nuc"
+model = "components/{component}/domain/models/{file}.nuc"
+usecase = "components/{component}/domain/usecases/{file}.nuc"
+service = "components/{component}/domain/services/{file}.nuc"
+aggregate = "components/{component}/domain/aggregates/{file}.nuc"
+appcomponent = "components/{component}/{component}_component.nuc"
+statemanager = "components/{component}/presentation/{screen}/managers/{file}.nuc"
+statemodel = "components/{component}/presentation/{screen}/state_models/{file}.nuc"
+stateless = "components/{component}/presentation/{screen}/{file}.nuc"
+stateful = "components/{component}/presentation/{screen}/{file}.nuc"
+component = "shared/components/{file}.nuc"
+guard = "shared/guards/{file}.nuc"
+event = "shared/events/{file}.nuc"
+tests = "test/{file}.nuc"
+form = "components/{component}/presentation/{screen}/forms/{file}.nuc"
+formmanager = "components/{component}/presentation/{screen}/managers/{file}.nuc"
+converter = "shared/converters/{file}.nuc"
+integration = "integration_test/{file}.nuc"
+tools = "components/{component}/ai/{file}.nuc"
+flow = "components/{component}/ai/{file}.nuc"
+chat = "components/{component}/ai/{file}.nuc"
+knowledge = "components/{component}/ai/{file}.nuc"
+remote = "components/{component}/data/{file}.nuc"
+
+# What `dragonfly gen` writes (ADR-0103): finished code from a resource's data (the values are listed in the backend
+# platform's platform.toml). The mobile platform reads other APIs (`--source rest`); its local database is the
+# repositories' `saveLocal`, not a resource of its own.
+# How `gen` writes the connection of an HTTP resource: the default one, or a named one when the app has another.
+[gen]
+http = 'Http(baseUrl = "{{baseUrl}}")'
+http_named = 'Http(connectionName = "{{name}}", baseUrl = "{{baseUrl}}")'
+
+[[generators.component]]
+kind = "appcomponent"
+name = "{{Component}}Component"
+merge = true
+template = """
+// What the screens and the other components see of {{component}}: an alias for each of its use cases.
+appcomponent {{Component}}Component
+"""
+
+[[generators.resource]]
+kind = "model"
+each = "models"
+when = "rest"
+name = "{{Model}}"
+template = """
+// {{Model}}, as the API answers it.
+{{Model}}
+{{#fields}}
+{{#key}}
+  @key("{{key}}")
+{{/key}}
+  {{name}}{{#optional}}?{{/optional}}: {{type}}
+{{/fields}}
+"""
+
+[[generators.resource]]
+kind = "model"
+when = "rest"
+name = "{{Name}}Error"
+template = """
+// What failed with {{names}}: Dragonfly builds it with the failure's message.
+{{Name}}Error
+  message: string
+"""
+
+[[generators.resource]]
+kind = "repository"
+when = "rest"
+name = "{{Name}}Repository"
+template = """
+// The {{names}} of the API ({{path}}): each method is an http call.
+@repository(path = "{{path}}"{{#connection}}, connection = "{{connection}}"{{/connection}})
+repository {{Name}}Repository
+{{#actions.list}}
+  @get
+  {{#paged}}page(page: int) Result<{{Name}}Error, {{Page}}>{{/paged}}{{^paged}}all() Result<{{Name}}Error, {{Name}}[]>{{/paged}}
+
+{{/actions.list}}
+{{#actions.get}}
+  @get(path = ":id")
+  one(id: {{idType}}) Result<{{Name}}Error, {{Name}}>
+
+{{/actions.get}}
+{{#actions.search}}
+  @get
+  search(name: string) Result<{{Name}}Error, {{#paged}}{{Page}}{{/paged}}{{^paged}}{{Name}}[]{{/paged}}>
+
+{{/actions.search}}
+{{#actions.create}}
+  @post
+  create(input: {{Name}}) Result<{{Name}}Error, {{Name}}>
+
+{{/actions.create}}
+{{#actions.update}}
+  @put(path = ":id")
+  update(id: {{idType}}, input: {{Name}}) Result<{{Name}}Error, {{Name}}>
+
+{{/actions.update}}
+{{#actions.delete}}
+  @delete(path = ":id")
+  remove(id: {{idType}}) Result<{{Name}}Error, boolean>
+{{/actions.delete}}
+"""
+
+[[generators.resource]]
+kind = "usecase"
+each = "each_action"
+name = "{{UseCase}}"
+template = """
+{{#is.list}}
+// One page of {{names}}.
+usecase {{UseCase}}(repository: {{Name}}Repository)
+{{#paged}}
+  exec(page: int) Result<{{Name}}Error, {{Name}}[]>
+    found = ~repository.page(page)
+    Ok(found.{{items}})
+{{/paged}}
+{{^paged}}
+  exec() Result<{{Name}}Error, {{Name}}[]>
+    ~repository.all()
+{{/paged}}
+{{/is.list}}
+{{#is.get}}
+// One {{name}} by its id.
+usecase {{UseCase}}(repository: {{Name}}Repository)
+  exec(id: {{idType}}) Result<{{Name}}Error, {{Name}}>
+    ~repository.one(id)
+{{/is.get}}
+{{#is.search}}
+// The {{names}} whose name matches.
+usecase {{UseCase}}(repository: {{Name}}Repository)
+  exec(name: string) Result<{{Name}}Error, {{Name}}[]>
+{{#paged}}
+    found = ~repository.search(name)
+    Ok(found.{{items}})
+{{/paged}}
+{{^paged}}
+    ~repository.search(name)
+{{/paged}}
+{{/is.search}}
+{{#is.create}}
+// Adds a {{name}}.
+usecase {{UseCase}}(repository: {{Name}}Repository)
+  exec(input: {{Name}}) Result<{{Name}}Error, {{Name}}>
+    ~repository.create(input)
+{{/is.create}}
+{{#is.update}}
+// Changes a {{name}}.
+usecase {{UseCase}}(repository: {{Name}}Repository)
+  exec(id: {{idType}}, input: {{Name}}) Result<{{Name}}Error, {{Name}}>
+    ~repository.update(id, input)
+{{/is.update}}
+{{#is.delete}}
+// Removes a {{name}}.
+usecase {{UseCase}}(repository: {{Name}}Repository)
+  exec(id: {{idType}}) Result<{{Name}}Error, boolean>
+    ~repository.remove(id)
+{{/is.delete}}
+"""
+
+[[generators.resource]]
+kind = "appcomponent"
+merge = true
+name = "{{Component}}Component"
+template = """
+// What the screens and the other components see of {{component}}: an alias for each of its use cases.
+appcomponent {{Component}}Component
+{{#each_action}}
+  {{alias}}() = {{UseCase}}.exec
+{{/each_action}}
+"""
+
+[[generators.resource]]
+kind = "statemodel"
+when = "screen"
+name = "{{Names}}State"
+template = """
+// The states of the {{names}} screen: each field is one.
+{{Names}}State
+  (full: {{Name}}[], error: {{Name}}Error, loading: boolean)
+"""
+
+[[generators.resource]]
+kind = "statemanager"
+when = "screen"
+name = "{{Names}}Manager"
+template = """
+// The state of the {{names}} screen: it loads the first page when it is created.
+@stateModel({{Names}}State)
+statemanager {{Names}}Manager
+  ({{component}}: {{Component}}Component)
+    load({{#listArg}}1{{/listArg}})
+
+  @state({{Names}}State.loading)
+  loading()
+
+  @before(loading)
+  @state({{Names}}State.full)
+  load({{listParam}}) Result<{{Name}}Error, {{Name}}[]>
+    ~{{component}}.list{{Names}}({{listArg}})
+"""
+
+[[generators.resource]]
+kind = "stateless"
+when = "screen"
+name = "{{Names}}Screen"
+template = """
+// The {{names}}, as a list.
+@screen(route = "/{{names|kebab}}", providers = [{{Names}}Manager])
+stateless {{Names}}Screen
+  build(context: BuildContext) Widget
+    Scaffold(
+      appBar = AppBar(title = Text("{{Names}}")),
+      body = {{Names}}StateBuilder<{{Names}}Manager>(
+        loading = () => Center(child = CircularProgressIndicator()),
+        full = (items) => ListView.builder(
+          itemCount = items.length,
+          itemBuilder = (context, index) => ListTile(title = Text({{#labelText}}items[index].{{label}}{{/labelText}}{{^labelText}}"${items[index].{{label}}}"{{/labelText}})),
+        ),
+        error = (e) => Center(child = Text(e.message)),
+      ),
+    )
+"""
+
+[[generators.resource]]
+kind = "tests"
+when = "actions.list"
+name = "{{Names}}Test"
+template = """
+// The tests of {{names}}: the repository is a mock; everything else is the real code.
+@mock([{{Name}}Repository])
+{{Names}}Test
+  setUp()
+{{#paged}}
+    when(() => {{Name}}Repository.page(1)).thenReturnAsync(Ok({{pageSample}}))
+{{/paged}}
+{{^paged}}
+    when(() => {{Name}}Repository.all()).thenReturnAsync(Ok([]))
+{{/paged}}
+
+  @test("List{{Names}} answers the {{names}} of the API")
+  lists()
+    result = ~List{{Names}}.exec({{#listArg}}1{{/listArg}})
+    expect(result, isOkWith({{#paged}}[]{{/paged}}{{^paged}}[]{{/paged}}))
+"""

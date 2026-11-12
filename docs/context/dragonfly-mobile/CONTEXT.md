@@ -29,6 +29,7 @@ Ecosystem libraries it relies on: `bloc`/`flutter_bloc`, `json_serializable`/`js
 
 | Path | What it does |
 |---|---|
+| `dialects/mobile/platform.toml` | the platform contract; `[layout]`, `[skeletons]`, `[gen]` + `[[generators.component\|resource]]` (what `dragonfly gen` writes, ADR-0103) |
 | `dialects/mobile/flutter/dialect.toml` | kinds, decorators, `[architecture]`, `[project]`, `[project.manifest]`, `[call_site.Log]`, defs list |
 | `dialects/mobile/flutter/templates/` | kind templates; `dragonfly_g.tpl` → `lib/dragonfly.g.dart` (startDragonfly, dragonflyConfig, registerDragonfly, buildRouter, appRouter); `generated_tests.tpl` → `test/dragonfly_generated_test.dart`; `model.tpl`, `converter.tpl`, `form.tpl`, `formmanager.tpl`, `native_splash.tpl` |
 | `dialects/mobile/flutter/docs.toml` | editor docs of every kind and decorator (required by a test) |

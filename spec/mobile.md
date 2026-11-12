@@ -59,6 +59,21 @@ Rules of the platform: §3; architecture (who uses whom, what a component shows)
 `genkit` and its providers `firebaseAI`, `googleAI`, `vertexAI`, `openAI`, `anthropic` ([flutter.md](flutter.md)
 §6.20, [projects.md](https://github.com/nuclearlang/nuclear/blob/main/spec/projects.md) §3.3).
 
+### Generators
+
+`dragonfly gen resource <component> <Name>` writes the finished, compiling code of a resource (ADR-0103): its models
+(nested objects become models named `<Name><Key>`; a paged answer gives `<Name>Page`), the repository (an HTTP repository over the app's `Http` connection, a named one added when the app has another), one use
+case per action (`--actions list,get,search,create,update,delete`), their aliases in the facade, with `--screen <screen>` a screen that lists it with its state manager and state model, and a test with the repository mocked. The fields
+come from an example answer (`--from-json <file|url>`), a spec (`--from-spec <spec.md>`: its example answer, else its
+`Key | Type` table; a `GET https://...` line gives the API) or `--fields "id:int name:string"`. A file that exists is
+never overwritten (the facade gets only the missing aliases); a name another file declares stops it before it writes.
+`dragonfly gen inspect` answers what the project has. The agent writes only what is not standard: a use case with
+its own rules, a view's details.
+
+```sh
+dragonfly gen resource characters Character --from-json https://rickandmortyapi.com/api/character
+```
+
 ## 3. Rules
 
 1. **Golden rule:** performance, speed and readability of the syntax.

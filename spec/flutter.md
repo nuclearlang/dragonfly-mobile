@@ -2646,7 +2646,9 @@ dragonfly new <name> [-p mobile|backend|web] [-d flutter|fastapi|nestjs|react] [
                                             # (n) new project of a platform (ADR-0093): mobile/flutter gets its
                                             #     Flutter app in build/app; backend/fastapi|nestjs and web/react
                                             #     only their .nuc, built with `nuclear build .` and the dialect's
-                                            #     [toolchain] (install/run/test); `check` delegates to `nuclear check .`
+                                            #     [toolchain] (install/run/test); `check` delegates to `nuclear check .`;
+                                            #     `-d` alone gives its platform (-d nestjs is backend), `-p` alone its
+                                            #     default dialect; a stray word or an option glued to the name is refused
 dragonfly code                               # opens the project in VS Code
 dragonfly watch                              # transpiles every time a .nuc changes
 dragonfly build [apk|appbundle|ios|ipa|web|macos|linux|windows] [-- <flutter build arguments>]
@@ -2666,6 +2668,8 @@ dragonfly setup [--dir ~/develop]            # installs Flutter step by step (sy
 dragonfly devices | emulators | logs | install | screenshot | attach | gen-l10n
 dragonfly flutter <any other flutter command>   # runs flutter inside the app
 ```
+
+Whole resources (models, repository, use cases, facade, screen, tests; every platform): `dragonfly gen` ([mobile.md](mobile.md) §2, Generators; ADR-0103).
 
 Generators: `dragonfly make <what> ...` or with an alias `dragonfly g <alias> ...`. They never overwrite a file.
 

@@ -67,9 +67,9 @@ stateful Counter(start: int = 0)
 ```
 
 **Rules**
-- The header parameters go to the widget (`final`, named); the fields and methods of the block go
-  to its `State`. Inside the `State`, a parameter is read as `widget.<name>`.
-- `setState()` + block → `setState(() { ... })`.
+- The header parameters are the inputs of the screen or widget; the fields and methods of the block are
+  its state, and a parameter is read as `widget.<name>`.
+- `setState()` + block changes the state and draws it again.
 - `State` members (`setState`, `context`, `widget`, `mounted`) exist without declaring them, and
   `initState`, `dispose`, `didUpdateWidget`... get `@override`.
 - `with Mixin` applies to the `State`:
@@ -103,7 +103,7 @@ appConfig ProjectConfig
 ```
 
 - Each connection has a `connectionName` (`""` is the default one); names do not repeat.
-- `Http(...)` takes dio's options: `baseUrl`, `connectTimeout`, `receiveTimeout`, `headers`,
+- `Http(...)` takes `baseUrl`, `connectTimeout`, `receiveTimeout`, `headers`,
   `interceptors`...
 - `~startDragonfly()` (in `main.nuc`) starts it before `runApp`.
 - A component adds its own with `config`.
@@ -340,7 +340,7 @@ States compare by value (`==`), so tests can expect them.
 '''
 
 statemanager = '''
-The **state of a screen** (a Cubit). `@stateModel(S)` names its state model; each `@state` method
+The **state of a screen**. `@stateModel(S)` names its state model; each `@state` method
 emits one state. Its dependencies are the constructor parameters, and the lines below the
 constructor run when it is created.
 
@@ -372,7 +372,7 @@ statemanager CharactersManager
 '''
 
 form = '''
-A **form model**: the fields of a form and their rules (like zod or class-validator). No header
+A **form model**: the fields of a form and their rules. No header
 word is needed in `presentation/<screen>/forms/`.
 
 ```nuclear
@@ -401,7 +401,7 @@ LoginForm
 '''
 
 formmanager = '''
-The **state of a form**: values, errors and remote validations (`FormManager<F>`, a Cubit).
+The **state of a form**: values, errors and remote validations (`FormManager<F>`).
 `@form(F)` binds it to its form model.
 
 ```nuclear
@@ -444,7 +444,7 @@ event ForceLogout
 
 Delivery is **on demand**: only the visible screen receives events; a hidden one gets the last
 event of each type when it shows again. Global components (`component`) always receive them.
-An event has `fromJson`/`toJson`: from another Flutter engine (workmanager) it travels as JSON, so its
+An event has `fromJson`/`toJson`: from a background task it travels as JSON, so its
 fields are JSON types (basic, `DateTime`, enums, models, lists).
 
 ```
@@ -475,7 +475,7 @@ component ForceLogoutComponent
 '''
 
 guard = '''
-A **custom access check**, like NestJS `CanActivate`. A single method `canActivate()` (`N0215`); its
+A **custom access check**. A single method `canActivate()` (`N0215`); its
 dependencies are injected.
 
 ```nuclear
@@ -521,8 +521,8 @@ CharactersTest
 |---|---|
 | `setUp()`, `tearDown()`, `setUpAll()`, `tearDownAll()` | run before / after the tests |
 | `@test("...")` | a unit test |
-| `@states("...", expect = [...])` | a statemanager test (bloc_test) |
-| `@widget("...")` | a widget test (`WidgetTester`) |
+| `@states("...", expect = [...])` | a statemanager test |
+| `@widget("...")` | a widget test |
 | `X.method()` | the instance of the injector (the mock or the real one) |
 
 A `Result` does not propagate here: compare it with `isOk`, `isErr`, `isOkWith(v)`, `isErrWith(e)`.
@@ -648,8 +648,8 @@ Navigate with the screen, not the address: `context.goTo(UserScreen(id = 7))`,
 '''
 
 splash = '''
-The **native launch screen** (flutter_native_splash) of the screen that is the splash: the background
-color and image the platform shows while Flutter starts.
+The **native launch screen** of the screen that is the splash: the background color and image the
+device shows while the app starts.
 
 ```nuclear
 @screen(route = "/start")
@@ -905,7 +905,7 @@ showsList(tester: WidgetTester)
 '''
 
 states = '''
-A **statemanager test** (bloc_test): the parameter is the manager (from the injector), the body is
+A **statemanager test**: the parameter is the manager (from the injector), the body is
 what it does and `expect` the states it emits, in order.
 
 ```nuclear
@@ -1112,3 +1112,18 @@ On a method of a `remote` kind: `@flow("path")`, the flow it calls (default: the
 stream = '''
 On a method of a `remote` kind: `@stream("path")`, a flow whose chunks it streams (the method returns a Stream).
 '''
+
+# What the flutter dialect writes underneath each word (its framework): the editor and `nuclear help` show it
+# after the word; the local agents never read it (they write only Nuclear).
+
+[underneath.kinds]
+stateful = 'a `StatefulWidget` and its `State`: the header parameters are `final` named fields of the widget; `setState()` + block becomes `setState(() { ... })`; `initState`, `dispose`, `didUpdateWidget`... get `@override`.'
+appConfig = "`Http` is a dio client: its options are dio's (`interceptors` included)."
+statemanager = 'a Cubit (bloc).'
+formmanager = 'a Cubit (bloc).'
+event = 'from another Flutter engine (a workmanager task) the event crosses as JSON.'
+tests = "statemanager tests use bloc_test; widget tests run with Flutter's `WidgetTester`."
+
+[underneath.decorators]
+splash = 'flutter_native_splash: shown while Flutter starts.'
+states = "bloc_test's `blocTest`."

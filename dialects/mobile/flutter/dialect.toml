@@ -127,6 +127,7 @@ description = "@repository(path, saveLocal) repository Name + @get/@post/... met
 inherits = ["Repository"]
 imports = ["Repository", "HttpMethod", "Decode", "Cache"]
 async_methods = true
+method_members = ["purge{{name|pascal}}", "{{name}}AsLocal"]
 template = { file = "templates/repository.tpl" }
 [kinds.repository.syntax]
 method_signature = { file = "templates/repository_method.tpl" }
@@ -143,6 +144,7 @@ method = { file = "templates/usecase_method.tpl" }
 
 # component facade: the only thing other components see
 [kinds.appcomponent]
+needs_body = true
 description = "appcomponent Name + aliases to usecases → the facade of a component"
 imports = ["inject"]
 alias_via = "inject"
