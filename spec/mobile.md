@@ -66,12 +66,17 @@ Rules of the platform: §3; architecture (who uses whom, what a component shows)
 case per action (`--actions list,get,search,create,update,delete`), their aliases in the facade, with `--screen <screen>` a screen that lists it with its state manager and state model, and a test with the repository mocked. The fields
 come from an example answer (`--from-json <file|url>`), a spec (`--from-spec <spec.md>`: its example answer, else its
 `Key | Type` table; a `GET https://...` line gives the API) or `--fields "id:int name:string"`. A file that exists is
-never overwritten (the facade gets only the missing aliases); a name another file declares stops it before it writes.
+never overwritten (the facade and the repository get only the members they lack, so an action added to a resource that exists is finished); a name another file declares stops it before it writes.
 `dragonfly gen inspect` answers what the project has. The agent writes only what is not standard: a use case with
 its own rules, a view's details.
 
+`dragonfly gen usecase <component> <Name>` adds the alias of a use case the project declares to its component's
+facade; with `--calls <Repository>.<method>` it writes the use case too, when all it does is call that method of a
+repository. What a screen shows of it (a state manager's method and its state) is written by hand.
+
 ```sh
 dragonfly gen resource characters Character --from-json https://rickandmortyapi.com/api/character
+dragonfly gen usecase characters CharacterEpisodes --calls CharacterRepository.episodes   # a method the repository declares
 ```
 
 ## 3. Rules

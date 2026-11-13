@@ -105,6 +105,7 @@ template = """
 
 [[generators.resource]]
 kind = "repository"
+merge = true
 when = "rest"
 name = "{{Name}}Repository"
 template = """
@@ -282,4 +283,28 @@ template = """
   lists()
     result = ~List{{Names}}.exec({{#listArg}}1{{/listArg}})
     expect(result, isOkWith({{#paged}}[]{{/paged}}{{^paged}}[]{{/paged}}))
+"""
+
+# What `dragonfly gen usecase <component> <Name>` writes (the values are listed in the backend platform's
+# platform.toml): the alias of a use case in its component's facade; with `--calls Repository.method`, the use case
+# too, over a method that answers a Result. What a screen shows of it is its state manager's, written by hand.
+[[generators.usecase]]
+kind = "usecase"
+when = "result"
+name = "{{UseCase}}"
+template = """
+// What {{Repository}}.{{method}} answers, for the screens of {{component}}.
+usecase {{UseCase}}(repository: {{Repository}})
+  exec({{params}}) Result<{{error}}, {{value}}>
+    ~repository.{{method}}({{args}})
+"""
+
+[[generators.usecase]]
+kind = "appcomponent"
+merge = true
+name = "{{Component}}Component"
+template = """
+// What the screens and the other components see of {{component}}: an alias for each of its use cases.
+appcomponent {{Component}}Component
+  {{alias}}() = {{UseCase}}.exec
 """
